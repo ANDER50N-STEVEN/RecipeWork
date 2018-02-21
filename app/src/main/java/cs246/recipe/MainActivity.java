@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
 //This is for Steven
     //YOLO
-    //This is the third test *************************
+    //This is the third test
     // this is the last one I think
 //This is eriqua
     //more words!
