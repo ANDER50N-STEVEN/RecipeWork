@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\ankita\RecipeWork\Recipe.iml" filepath="C:\Users\ankita\RecipeWork\Recipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/RecipeWork.iml" filepath="$PROJECT_DIR$/RecipeWork.iml" />
-      <module fileurl="file://C:\Users\aiel__000\RecipeWork\RecipeWork.iml" filepath="C:\Users\aiel__000\RecipeWork\RecipeWork.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\ankita\RecipeWork\app\app.iml" filepath="C:\Users\ankita\RecipeWork\app\app.iml" />
-      <module fileurl="file://C:\Users\aiel__000\RecipeWork\app\app.iml" filepath="C:\Users\aiel__000\RecipeWork\app\app.iml" />
     </modules>
   </component>
 </project>
