@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     //8888888888888888888888888888888
     //77777777777777777
 //This is eriqua
-    //more words!
+    //mo rds!
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
