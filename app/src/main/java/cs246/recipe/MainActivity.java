@@ -14,9 +14,10 @@ public class MainActivity extends AppCompatActivity {
     //YOLO
     //This is the third test *************************
     // this is the last one I think
+    //8888888888888888888888888888888
     //77777777777777777
-//This is eriquaEisele
-    //mo rds!
+//This is eriqua
+    //more words!
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
