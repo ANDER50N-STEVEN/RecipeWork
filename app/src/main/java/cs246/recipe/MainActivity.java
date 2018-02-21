@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 //This is for Steven
     //This is the third test *************************
 //This is eriqua
+    //more words!
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
