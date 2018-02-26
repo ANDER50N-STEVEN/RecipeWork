@@ -8,13 +8,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-//This is a test for push and pull by ankita
     private TextView mTextMessage;
-//This is for Steven
-    //YOLO
-    //This is the third test
-//This is eriqua
-    //more words!
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -34,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
-    //This is a test for push and pull by ankita second push
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
