@@ -40,7 +40,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         mCheckoutButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mShoppingList = NULL;
+                mShoppingList = null;
                 Toast.makeText(getApplicationContext(), "Your shopping cart is now empty!",
                         Toast.LENGTH_LONG).show();
             }
