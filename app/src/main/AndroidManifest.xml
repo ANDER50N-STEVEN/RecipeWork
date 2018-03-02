@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".CookBookActivity" />
         <activity android:name=".PantryActivity" />
-        <activity android:name=".ShoppingListActivity"></activity>
+        <activity android:name=".ShoppingListActivity" />
+        <activity android:name=".NewRecipe" />
     </application>
 
 </manifest>
