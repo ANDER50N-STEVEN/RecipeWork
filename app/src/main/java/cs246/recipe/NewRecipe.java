@@ -1,9 +1,14 @@
 package cs246.recipe;
 
-/**
- * Created by Sony Vaio on 2/27/2018.
- */
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-public class NewRecipe extends CookBookActivity {
+public class NewRecipe extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_recipe);
+    }
 
 }
