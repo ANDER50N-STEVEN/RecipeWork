@@ -45,4 +45,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void switchToShoppingList(View view) {
+        Intent intent = new Intent(this, ShoppingListActivity.class);
+        startActivity(intent);
+    }
+
+    public void switchToPantry(View view) {
+        Intent intent = new Intent(this, PantryActivity.class);
+        startActivity(intent);
+    }
+
 }

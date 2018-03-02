@@ -36,6 +36,7 @@
         android:layout_height="80dp"
         android:layout_marginEnd="16dp"
         android:text="Pantry"
+        android:onClick="switchToPantry"
         app:layout_constraintBaseline_toBaselineOf="@+id/button"
         app:layout_constraintRight_toRightOf="parent" />
 
@@ -44,6 +45,7 @@
         android:layout_width="150dp"
         android:layout_height="80dp"
         android:text="Shopping List"
+        android:onClick="switchToShoppingList"
         app:layout_constraintBaseline_toBaselineOf="@+id/button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

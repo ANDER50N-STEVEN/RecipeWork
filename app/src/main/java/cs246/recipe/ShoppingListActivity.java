@@ -1,5 +1,6 @@
 package cs246.recipe;
 
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -46,6 +47,7 @@ public class ShoppingListActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }
