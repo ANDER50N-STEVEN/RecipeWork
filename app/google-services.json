@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "470240599861",
+    "firebase_url": "https://recipework-e0a20.firebaseio.com",
+    "project_id": "recipework-e0a20",
+    "storage_bucket": "recipework-e0a20.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470240599861:android:0983edb0c974d6de",
+        "android_client_info": {
+          "package_name": "cs246.recipe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "470240599861-n8nqrfn6v427570fbikt4p0i2fv7mqhl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs246.recipe",
+            "certificate_hash": "c3f914b0fef186d987625723d5a52515ebd6e87b"
+          }
+        },
+        {
+          "client_id": "470240599861-h9rmfko838uqepq26o380la8jjsv0h9l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs246.recipe",
+            "certificate_hash": "2074e50d16ecf8ac27309a5cd73f19d92797caa1"
+          }
+        },
+        {
+          "client_id": "470240599861-721dcpb0q8190vmd5lj2jkk4mhfllsnh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBIXjXfAfVRab4j3jotwNSD7Ki3ilAThQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "470240599861-721dcpb0q8190vmd5lj2jkk4mhfllsnh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
