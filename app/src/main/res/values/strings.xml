@@ -10,4 +10,7 @@
     <string name="cookbook_button">Cookbook</string>
     <string name="pantry_button">Pantry</string>
     <string name="shopping_list_button">Shopping List</string>
+    <string name="capture">Capture</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>
