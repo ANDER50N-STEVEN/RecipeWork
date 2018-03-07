@@ -14,4 +14,5 @@
     <string name="capture">Capture</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="add_instructions">Add Instructions</string>
 </resources>
