@@ -7,4 +7,7 @@
     <string name="add_button_text">Add</string>
     <string name="item_editText_hint">Write a new item</string>
     <string name="checkout_button_text">Checkout</string>
+    <string name="cookbook_button">Cookbook</string>
+    <string name="pantry_button">Pantry</string>
+    <string name="shopping_list_button">Shopping List</string>
 </resources>

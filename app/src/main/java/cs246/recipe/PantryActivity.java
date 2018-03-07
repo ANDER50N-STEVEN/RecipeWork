@@ -8,7 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 public class PantryActivity extends AppCompatActivity {
+    private StorageReference mStorageRef;
 
 
     private EditText mItemEdit;
@@ -16,6 +20,9 @@ public class PantryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
 
