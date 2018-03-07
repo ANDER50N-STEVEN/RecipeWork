@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <TableRow
+        android:id="@+id/ingredients"
         android:layout_width="match_parent"
         android:layout_height="159dp"
         android:layout_marginEnd="8dp"
@@ -31,7 +32,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/addIngredient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/add_button_text"
@@ -40,7 +41,7 @@
     </TableRow>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnCapture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -69,7 +70,7 @@
         tools:text="Add instructions" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -81,7 +82,7 @@
         tools:text="Save" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/btnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
