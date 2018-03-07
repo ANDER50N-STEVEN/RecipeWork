@@ -25,7 +25,7 @@
         android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Cookbook"
+        android:text="@string/cookbook_button"
         android:onClick="switchToCookbook"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +35,7 @@
         android:layout_width="100dp"
         android:layout_height="80dp"
         android:layout_marginEnd="16dp"
-        android:text="Pantry"
+        android:text="@string/pantry_button"
         android:onClick="switchToPantry"
         app:layout_constraintBaseline_toBaselineOf="@+id/button"
         app:layout_constraintRight_toRightOf="parent" />
@@ -44,7 +44,7 @@
         android:id="@+id/button3"
         android:layout_width="150dp"
         android:layout_height="80dp"
-        android:text="Shopping List"
+        android:text="@string/shopping_list_button"
         android:onClick="switchToShoppingList"
         app:layout_constraintBaseline_toBaselineOf="@+id/button"
         app:layout_constraintLeft_toLeftOf="parent"
