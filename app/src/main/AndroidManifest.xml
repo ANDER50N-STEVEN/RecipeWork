@@ -22,6 +22,7 @@
         <activity android:name=".PantryActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".NewRecipe" />
+        <activity android:name=".Recipe" />
     </application>
 
 </manifest>

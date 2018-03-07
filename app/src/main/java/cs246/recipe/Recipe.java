@@ -1,8 +1,8 @@
 package cs246.recipe;
 
-/**
- * Created by Sony Vaio on 2/27/2018.
- */
 
-public class Recipe extends CookBookActivity {
+import android.support.v7.app.AppCompatActivity;
+
+public class Recipe extends AppCompatActivity {
+
 }
