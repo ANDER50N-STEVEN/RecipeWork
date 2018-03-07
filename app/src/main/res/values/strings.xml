@@ -10,4 +10,5 @@
     <string name="cookbook_button">Cookbook</string>
     <string name="pantry_button">Pantry</string>
     <string name="shopping_list_button">Shopping List</string>
+    <string name="add_new_recipe">Add New Recipe</string>
 </resources>
