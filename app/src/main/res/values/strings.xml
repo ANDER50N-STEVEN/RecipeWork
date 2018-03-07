@@ -4,7 +4,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_cook_book">CookBookActivity</string>
-    <string name="add_button_text">Add</string>
+    <string name="add_button_text">Add Ingredient</string>
     <string name="item_editText_hint">Write a new item</string>
     <string name="checkout_button_text">Checkout</string>
     <string name="cookbook_button">Cookbook</string>

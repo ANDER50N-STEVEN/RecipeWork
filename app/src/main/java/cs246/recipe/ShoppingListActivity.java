@@ -11,29 +11,34 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class ShoppingListActivity extends AppCompatActivity {
 
-    private ListView mShoppingList;
+    private ListView mShoppingListView;
     private EditText mItemEdit;
     private ArrayAdapter<String> mAdapter;
+    ArrayList<String> shoppingList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        mShoppingList = findViewById(R.id.shoppingList);
+        mShoppingListView = findViewById(R.id.shoppingList);
         mItemEdit = findViewById(R.id.item_editText);
         Button mAddButton = findViewById(R.id.add_button);
         Button mCheckoutButton = findViewById(R.id.checkout);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        mShoppingList.setAdapter(mAdapter);
+        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, shoppingList);
+        mShoppingListView.setAdapter(mAdapter);
 
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
-                mAdapter.add(item);
+                shoppingList.add(item);
+            //    mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingList);
+                mShoppingListView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
                 mItemEdit.setText("");
             }
@@ -42,7 +47,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         mCheckoutButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mShoppingList = null;
+                shoppingList = null;
                 Toast.makeText(getApplicationContext(), "Your shopping cart is now empty!",
                         Toast.LENGTH_LONG).show();
             }
