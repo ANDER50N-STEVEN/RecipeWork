@@ -11,4 +11,7 @@
     <string name="pantry_button">Pantry</string>
     <string name="shopping_list_button">Shopping List</string>
     <string name="add_new_recipe">Add New Recipe</string>
+    <string name="capture">Capture</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -26,8 +26,7 @@
                 android:id="@+id/addIngredientField"
                 android:layout_width="335dp"
                 android:layout_height="wrap_content"
-                android:text="@string/add_button_text"
-                tools:text="add ingredient" />
+                android:text="@string/add_button_text"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -51,7 +50,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Capture" />
+        android:text="@string/capture"
+        tools:ignore="UnknownIdInLayout" />
 
     <EditText
         android:id="@+id/addInstructionsField"
@@ -79,7 +79,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Save" />
+        android:text="@string/save" />
 
     <Button
         android:id="@+id/btnCancel"
@@ -91,6 +91,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button2"
-        tools:text="Cancel" />
+        android:text="@string/cancel"
+        tools:ignore="UnknownIdInLayout" />
 
 </android.support.constraint.ConstraintLayout>
