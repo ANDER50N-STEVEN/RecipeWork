@@ -13,7 +13,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NewRecipe extends AppCompatActivity {
+
+    List<String> ingredients;
+    ListView ingredientList;
 
     private EditText input2;
     private Button saveButton;
@@ -30,12 +36,15 @@ public class NewRecipe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
+        ingredients = new ArrayList<>();
+        ingredientList = (ListView) findViewById(R.id.listIngredient);
+
         /* ****************************
         *  Getting all the buttons and list view by their ID's
         ***************************** */
         newIngredient = findViewById(R.id.listIngredient); //list view
         mItemEdit = findViewById(R.id.addIngredientField); // ingredient input field
-        ImageButton mAddButton = findViewById(R.id.addImageButton); // + add image button
+        ImageButton mAddButton = findViewById(R.id.add_ingredient_button); // + add image button
         Button mCaptureButton = findViewById(R.id.captureButton); //capture button
         Button mCancelButton = findViewById(R.id.cancelButton); //cancel button
         input2 = findViewById(R.id.addInstructionsField); // instructions input field

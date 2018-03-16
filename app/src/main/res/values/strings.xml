@@ -16,4 +16,5 @@
     <string name="add_image_button_text">Add Image Button</string>
     <string name="newInstruction_editText_hint">Add instructions</string>
     <string name="newIngredient_editText_hint">Add ingredient</string>
+    <string name="add_new_recipe">Add New Recipe</string>
 </resources>
