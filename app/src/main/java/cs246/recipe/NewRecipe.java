@@ -1,12 +1,15 @@
 package cs246.recipe;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,30 +17,39 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 
 public class NewRecipe extends AppCompatActivity {
 
-    private static final String TAG = "MyFirebase";
     private EditText input2;
     private Button saveButton;
     private ListView newIngredient;
     private EditText mItemEdit;
     private ArrayAdapter<String> mAdapter;
-
-    public static String addIngredient = "flour";
-    public static String addInstructions = "Preheat the oven to 325";
-
+    private StorageReference mStorage;
+    private static final int GALLERY_INTENT = 2;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
+        //declare StorageReference for uploading photo
+        mStorage = FirebaseStorage.getInstance().getReference();
+
+        mProgressDialog = new ProgressDialog(this);
         /* ****************************
         *  Getting all the buttons and list view by their ID's
         ***************************** */
@@ -56,14 +68,14 @@ public class NewRecipe extends AppCompatActivity {
         final SharedPreferences prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
+
         /* ****************************
-         * supposed to be shared preferences thing
+         * for our save button
          ***************************** */
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                editor.clear();
             }
         });
 
@@ -83,7 +95,6 @@ public class NewRecipe extends AppCompatActivity {
                     editor.putString(String.valueOf(i), mAdapter.getItem(i));
                 }
                 editor.commit();
-
             }
         });
 
@@ -93,7 +104,16 @@ public class NewRecipe extends AppCompatActivity {
         mCaptureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                getIntent.setType("image/*");
 
+                Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                pickIntent.setType("image/*");
+
+                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+
+                startActivityForResult(chooserIntent, GALLERY_INTENT);
             }
         });
 
@@ -103,7 +123,6 @@ public class NewRecipe extends AppCompatActivity {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.clear();
             }
         });
 
@@ -116,31 +135,26 @@ public class NewRecipe extends AppCompatActivity {
                 break; // Empty String means the default value was returned.
             }
         }
-        //----------------------------------------------------
-        //write a message to database
+        //-----------------------------------------------------------
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-
-        myRef.setValue("Hello, World!");
-
-        // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.v(TAG, "Failed to read value.", error.toException());
-            }
-        });
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == GALLERY_INTENT && resultCode == RESULT_OK)
+        {
+            mProgressDialog.setMessage("Uploading....");
+            mProgressDialog.show();
+            Uri uri = data.getData();
+            StorageReference filepath = mStorage.child("photos").child(uri.getLastPathSegment());
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(NewRecipe.this, "Upload done", Toast.LENGTH_LONG).show();
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
+    }
 }
