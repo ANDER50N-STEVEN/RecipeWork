@@ -26,7 +26,7 @@ public class PantryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
 
-        ListView mIngredients = findViewById(R.id.pantry);
+        ListView mIngredients = findViewById(R.id.pantryList);
         mItemEdit = findViewById(R.id.item_editText);
         Button mAddButton = findViewById(R.id.add_button);
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);

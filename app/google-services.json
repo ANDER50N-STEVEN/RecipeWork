@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "470240599861-2trivie77r8n197t8tpr9qk5tfqmfvej.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs246.recipe",
+            "certificate_hash": "d3956898f33cf61ecb1111a08218a9c87d818799"
+          }
+        },
+        {
+          "client_id": "470240599861-n8nqrfn6v427570fbikt4p0i2fv7mqhl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs246.recipe",
+            "certificate_hash": "c3f914b0fef186d987625723d5a52515ebd6e87b"
+          }
+        },
+        {
           "client_id": "470240599861-h9rmfko838uqepq26o380la8jjsv0h9l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
