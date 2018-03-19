@@ -16,4 +16,8 @@
     <string name="add_image_button_text">Add Image Button</string>
     <string name="newInstruction_editText_hint">Add instructions</string>
     <string name="newIngredient_editText_hint">Add ingredient</string>
+    <string name="welcome_text_view">WELCOME TO RECIPE</string>
+    <string name="email_input_field">Email Address</string>
+    <string name="password_input_field">Password</string>
+    <string name="login_button">Login</string>
 </resources>

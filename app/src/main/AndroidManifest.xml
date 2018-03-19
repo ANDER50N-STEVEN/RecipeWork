@@ -21,8 +21,9 @@
         <activity android:name=".CookBookActivity" />
         <activity android:name=".PantryActivity" />
         <activity android:name=".ShoppingListActivity" />
-        <activity android:name=".NewRecipe"/>
+        <activity android:name=".NewRecipe" />
         <activity android:name=".Recipe" />
+        <activity android:name=".Welcome" />
     </application>
 
 </manifest>
