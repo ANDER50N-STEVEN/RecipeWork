@@ -7,8 +7,8 @@
 
     <TableRow
         android:id="@+id/tableRow"
-        android:layout_width="match_parent"
-        android:layout_height="62dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -16,25 +16,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/addIngredientField"
-            android:layout_width="297dp"
-            android:layout_height="match_parent"
-            android:ems="10"
-            android:hint="@string/newIngredient_editText_hint" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/addImageButton"
-            android:layout_width="73dp"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/add_image_button_text"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            <EditText
+                android:id="@+id/addIngredientField"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="16dp"
+                android:ems="10"
+                android:hint="@string/newIngredient_editText_hint"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/add_ingredient_button"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/add_ingredient_button"
+                android:layout_width="73dp"
+                android:layout_height="49dp"
+                android:layout_marginRight="16dp"
+                android:contentDescription="@string/add_image_button_text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:drawable/ic_input_add" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </TableRow>
 
     <EditText
         android:id="@+id/addInstructionsField"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="163dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -91,7 +107,7 @@
 
     <ListView
         android:id="@+id/listIngredient"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="189dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
