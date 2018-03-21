@@ -24,6 +24,8 @@
         <activity android:name=".NewRecipe" />
         <activity android:name=".Recipe" />
         <activity android:name=".Welcome" />
+        <activity android:name=".SignUp" />
+        <activity android:name=".ForgetPassword"></activity>
     </application>
 
 </manifest>

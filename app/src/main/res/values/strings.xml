@@ -16,8 +16,15 @@
     <string name="add_image_button_text">Add Image Button</string>
     <string name="newInstruction_editText_hint">Add instructions</string>
     <string name="newIngredient_editText_hint">Add ingredient</string>
-    <string name="welcome_text_view">WELCOME TO RECIPE</string>
-    <string name="email_input_field">Email Address</string>
+    <string name="welcome_login_page">RECIPE</string>
+    <string name="email_input_field">Email</string>
     <string name="password_input_field">Password</string>
-    <string name="login_button">Login</string>
+    <string name="login_button">Sign In</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="new_User">Create New Account</string>
+    <string name="send_email">Send Request</string>
+    <string name="account_recovery">Account Recovery</string>
+    <string name="enter_name">Name</string>
 </resources>

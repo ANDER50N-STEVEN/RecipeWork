@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,30 +24,21 @@ public class MainActivity extends AppCompatActivity {
     private EditText mEmailField;
     private EditText mPasswordField;
     private Button mLoginBtn;
+    private Button mSignUpBtn;
+    private TextView mForgetPssword;
+
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
-        mEmailField = (EditText) findViewById(R.id.emailInput);
-        mPasswordField = (EditText) findViewById(R.id.passwordInput);
-        mLoginBtn = (Button) findViewById(R.id.loginButton);
-/*
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth mAuth) {
-
-
-                if(mAuth.getCurrentUser() != null)
-                {
-                    Toast.makeText(MainActivity.this, "Going to another page!", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(MainActivity.this, Welcome.class));
-                }
-            }
-        };*/
+        mEmailField = findViewById(R.id.emailInput);
+        mPasswordField = findViewById(R.id.passwordInput);
+        mLoginBtn = findViewById(R.id.loginButton);
+        mSignUpBtn = findViewById(R.id.signUp);
+        mForgetPssword = findViewById(R.id.forgetPassword);
 
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,12 +46,25 @@ public class MainActivity extends AppCompatActivity {
                 startSignIn();
             }
         });
+
+        mSignUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, SignUp.class));
+            }
+        });
+
+        mForgetPssword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ForgetPassword.class));
+            }
+        });
     }
 
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //mAuth.addAuthStateListener(mAuthListener);
     }
 
     private void startSignIn()

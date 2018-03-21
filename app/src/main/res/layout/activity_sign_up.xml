@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cs246.recipe.MainActivity">
+    tools:context="cs246.recipe.SignUp">
 
     <ImageView
         android:layout_width="match_parent"
@@ -23,13 +23,31 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="57dp"
-        android:text="@string/welcome_login_page"
+        android:text="@string/new_User"
         android:textAlignment="center"
         android:textColor="@color/blueAqua"
         android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/passwordInput"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="124dp"
+        android:background="@drawable/text_box_corner_login"
+        android:ems="10"
+        android:hint="@string/enter_name"
+        android:paddingEnd="0dp"
+        android:textColor="@color/blueAqua"
+        android:paddingStart="20dp"
+        android:textColorHint="@color/blueAqua"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeLoginPage" />
 
     <EditText
         android:id="@+id/emailInput"
@@ -55,7 +73,6 @@
         android:layout_width="300dp"
         android:textColor="@color/blueAqua"
         android:layout_height="48dp"
-        android:layout_alignBottom="@+id/loginButton"
         android:layout_alignStart="@+id/emailInput"
         android:layout_marginTop="37dp"
         android:background="@drawable/text_box_corner_login"
@@ -73,68 +90,19 @@
         android:id="@+id/signUp"
         android:layout_width="90dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/button_dark_blue"
-        android:padding="10dp"
-        android:text="@string/sign_up"
-        android:textColor="@color/blueAqua"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInput" />
-
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/forgetPassword"
-        android:layout_alignEnd="@+id/passwordInput"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/button_light_blue"
         android:padding="10dp"
-        android:text="@string/login_button"
+        android:text="@string/sign_up"
         android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.192"
-        app:layout_constraintStart_toEndOf="@+id/signUp"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInput" />
-
-    <TextView
-        android:id="@+id/forgetPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/checkBoxRememberMe"
-        android:layout_alignBottom="@+id/checkBoxRememberMe"
-        android:layout_alignEnd="@+id/loginButton"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="44dp"
-        android:layout_marginTop="28dp"
-        android:text="@string/forget_password"
-        android:textColor="@color/blueAqua"
-        android:textSize="15sp"
-        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton"
-        app:layout_constraintVertical_bias="0.105" />
-
-    <CheckBox
-        android:id="@+id/checkBoxRememberMe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/passwordInput"
-        android:layout_marginBottom="48dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/remember_me"
-        android:textColor="@color/blueAqua"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/forgetPassword"
-        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintHorizontal_bias="0.817"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUp"
-        app:layout_constraintVertical_bias="0.925" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordInput"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>
