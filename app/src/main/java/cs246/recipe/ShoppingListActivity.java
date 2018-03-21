@@ -23,6 +23,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+/**
+ * Activity to display the user's shopping list.  Will utilize Firebase Database
+ * to save ingredients with the quantity, consisting of value of measurements.
+ *
+ * @author Steven Anderson
+ */
+
 public class ShoppingListActivity extends AppCompatActivity {
 
     private static final String TAG = "AddToDatabase";
@@ -61,6 +68,11 @@ public class ShoppingListActivity extends AppCompatActivity {
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, shoppingList);
         mShoppingListView.setAdapter(mAdapter);
 
+        /**
+         * This not only activates when a state change occurs but also when the activity
+         * fist starts up
+         */
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -80,6 +92,7 @@ public class ShoppingListActivity extends AppCompatActivity {
 
 
         // Read from the database
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
