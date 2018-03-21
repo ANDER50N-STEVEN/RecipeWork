@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,16 +29,23 @@ public class ShoppingListActivity extends AppCompatActivity {
 
     private ListView mShoppingListView;
     private EditText mItemEdit;
+    private EditText mValueEdit;
     private ArrayAdapter<String> mAdapter;
     ArrayList<String> shoppingList = new ArrayList<>();
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
+
+        spinner = findViewById(R.id.spinner1);
+        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz"};
+        ArrayAdapter<String> madapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        spinner.setAdapter(madapter);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -47,6 +55,7 @@ public class ShoppingListActivity extends AppCompatActivity {
 
         mShoppingListView = findViewById(R.id.shoppingList);
         mItemEdit = findViewById(R.id.item_editText);
+        mValueEdit = findViewById(R.id.value_editText);
         Button mAddButton = findViewById(R.id.add_button);
         Button mCheckoutButton = findViewById(R.id.checkout);
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, shoppingList);
@@ -78,6 +87,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
                 Log.d(TAG, "onDataChange: Added information to database: \n" +
                         dataSnapshot.getValue());
+
             }
             @Override
             public void onCancelled(DatabaseError error) {
@@ -90,19 +100,22 @@ public class ShoppingListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
+                String value = mValueEdit.getText().toString();
 
-                Log.d(TAG, "Ingredient: " + item + "\n");
+                Log.d(TAG, "Ingredient: " + item + "  Value: " + value + "\n");
 
 
                 //handle the exception if the EditText fields are null
-                if (!item.equals("")) {
-                    shoppingList.add(item);
+                if (!item.equals("") && !value.equals("")) {
+                    Ingredient ingredient = new Ingredient(item, value);
+                    shoppingList.add(item + "  " + value);
                     //    mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingList);
                     mShoppingListView.setAdapter(mAdapter);
                     mAdapter.notifyDataSetChanged();
                     mItemEdit.setText("");
+                    mValueEdit.setText("");
 
-                    myRef.child("users").child(userID).child("ShoppingList").push().setValue(item);
+                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(value);
                     toastMessage("New Information has been saved.");
                 } else {
                     toastMessage("Fill out all the fields");
