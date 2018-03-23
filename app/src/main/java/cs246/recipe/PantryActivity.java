@@ -5,10 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,26 +24,37 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class PantryActivity extends AppCompatActivity {
+public class PantryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
     private static final String TAG = "AddToDatabase";
 
     private ListView mPantryListView;
     private EditText mItemEdit;
+    private EditText mValueEdit;
     private ArrayAdapter<String> mAdapter;
     ArrayList<String> pantryList = new ArrayList<>();
+
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    String userID;
-
+    private Spinner spinner;
+    private String units;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
+
+        spinner = findViewById(R.id.spinner1);
+        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz"};
+        ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(madapter);
+        spinner.setOnItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -51,9 +64,15 @@ public class PantryActivity extends AppCompatActivity {
 
         mPantryListView = findViewById(R.id.pantryList);
         mItemEdit = findViewById(R.id.item_editText);
+        mValueEdit = findViewById(R.id.value_editText);
         Button mAddButton = findViewById(R.id.add_button);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pantryList);
         mPantryListView.setAdapter(mAdapter);
+
+        /**
+         * This not only activates when a state change occurs but also when the activity
+         * fist starts up
+         */
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -74,6 +93,7 @@ public class PantryActivity extends AppCompatActivity {
 
 
         // Read from the database
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -82,8 +102,8 @@ public class PantryActivity extends AppCompatActivity {
                 Log.d(TAG, "onDataChange: Added information to database: \n" +
                         dataSnapshot.getValue());
                 showData(dataSnapshot);
-            }
 
+            }
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
@@ -95,37 +115,53 @@ public class PantryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
+                String value = mValueEdit.getText().toString();
 
-                Log.d(TAG, "Ingredient: " + item + "\n");
+                Log.d(TAG, "Ingredient: " + item + "  Value: " + value + "\n");
 
 
                 //handle the exception if the EditText fields are null
-                if (!item.equals("")) {
-                    pantryList.add(item);
+                if (!item.equals("") && !value.equals("")) {
+                    Ingredient ingredient = new Ingredient(item, value, units);
+                    pantryList.add(value + " " + units + " - " + item);
                     //    mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingList);
-      //              mPantryListView.setAdapter(mAdapter);
-      //              mAdapter.notifyDataSetChanged();
+                    mPantryListView.setAdapter(mAdapter);
+                    mAdapter.notifyDataSetChanged();
                     mItemEdit.setText("");
+                    mValueEdit.setText("");
 
-                    myRef.child("users").child(userID).child("Pantry").push().setValue(item);
+                    Map<String, Ingredient> pantry = new HashMap<>();
+                    pantry.put( item, new Ingredient(item, value, units));
+                    myRef.child("users").child(userID).child("Pantry").child(item).setValue(ingredient);
+
+//                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(value).child(units);
                     toastMessage("New Information has been saved.");
                 } else {
                     toastMessage("Fill out all the fields");
                 }
             }
+
         });
 
     }
 
     private void showData(DataSnapshot dataSnapshot){
         for(DataSnapshot ds : dataSnapshot.getChildren()){
+            Ingredient uInfo = new Ingredient();
+            uInfo.setIngredient(ds.child(userID).child("Pantry").child("flour").getValue(Ingredient.class).getIngredient());
+            uInfo.setValue(ds.child(userID).child("Pantry").child("flour").getValue(Ingredient.class).getValue());
+            uInfo.setUnits(ds.child(userID).child("Pantry").child("flour").getValue(Ingredient.class).getUnits());
 
-            Ingredient ingredient = new Ingredient();
-            ingredient.setIngredient(ds.child(userID).child("Pantry").getValue(Ingredient.class).getIngredient());
-            ingredient.setValue(ds.child(userID).child("Pantry").getValue(Ingredient.class).getValue());
-            pantryList.add(ingredient.getIngredient() + "    " + ingredient.getValue());
-            mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-            mPantryListView.setAdapter(mAdapter);
+            //display all the information
+            Log.d(TAG, "showData: name: " + uInfo.getIngredient());
+            Log.d(TAG, "showData: email: " + uInfo.getValue());
+            Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
+
+            ArrayList<String> array  = new ArrayList<>();
+            pantryList.add(uInfo.getValue() + " " + uInfo.getUnits() + " - " + uInfo.getIngredient());
+
+            ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,pantryList);
+            mPantryListView.setAdapter(adapter);
 
         }
     }
@@ -145,6 +181,7 @@ public class PantryActivity extends AppCompatActivity {
     }
 
 
+
     /**
      * customizable toast
      * @param message
@@ -153,4 +190,16 @@ public class PantryActivity extends AppCompatActivity {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+        units = adapterView.getItemAtPosition(i).toString();
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }
+

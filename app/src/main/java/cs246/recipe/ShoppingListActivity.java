@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Activity to display the user's shopping list.  Will utilize Firebase Database
@@ -30,7 +33,7 @@ import java.util.ArrayList;
  * @author Steven Anderson
  */
 
-public class ShoppingListActivity extends AppCompatActivity {
+public class ShoppingListActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "AddToDatabase";
 
@@ -39,10 +42,12 @@ public class ShoppingListActivity extends AppCompatActivity {
     private EditText mValueEdit;
     private ArrayAdapter<String> mAdapter;
     ArrayList<String> shoppingList = new ArrayList<>();
+
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Spinner spinner;
+    private String units;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +57,9 @@ public class ShoppingListActivity extends AppCompatActivity {
         spinner = findViewById(R.id.spinner1);
         String[] measurement = new String[]{"tsp", "tbs", "cup", "floz"};
         ArrayAdapter<String> madapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(madapter);
+        spinner.setOnItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -120,15 +127,19 @@ public class ShoppingListActivity extends AppCompatActivity {
 
                 //handle the exception if the EditText fields are null
                 if (!item.equals("") && !value.equals("")) {
-                    Ingredient ingredient = new Ingredient(item, value);
-                    shoppingList.add(item + "  " + value);
+                    Ingredient ingredient = new Ingredient(item, value, units);
+                    shoppingList.add(value + " " + units + " - " + item);
                     //    mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingList);
                     mShoppingListView.setAdapter(mAdapter);
                     mAdapter.notifyDataSetChanged();
                     mItemEdit.setText("");
                     mValueEdit.setText("");
 
-                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(value);
+                    Map<String, Ingredient> shopping = new HashMap<>();
+                    shopping.put( item, new Ingredient(item, value, units));
+                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
+
+//                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(value).child(units);
                     toastMessage("New Information has been saved.");
                 } else {
                     toastMessage("Fill out all the fields");
@@ -141,6 +152,7 @@ public class ShoppingListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 shoppingList = null;
+                copyRecord( myRef.child("users").child(userID).child("ShoppingList"),  myRef.child("users").child(userID).child("Pantry"));
                 myRef.child("users").child(userID).child("ShoppingList").removeValue();
                 Toast.makeText(getApplicationContext(), "Your shopping cart is now empty!",
                         Toast.LENGTH_LONG).show();
@@ -162,6 +174,34 @@ public class ShoppingListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Probably should be its own class
+     * @param fromPath
+     * @param toPath
+     */
+
+    public void copyRecord(DatabaseReference fromPath, final DatabaseReference toPath) {
+        fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
+                        @Override
+                    public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
+                        if (firebaseError != null) {
+                            System.out.println("Copy failed");
+                        } else {
+                            System.out.println("Success");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     /**
      * customizable toast
@@ -171,5 +211,16 @@ public class ShoppingListActivity extends AppCompatActivity {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+        units = adapterView.getItemAtPosition(i).toString();
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }
 
