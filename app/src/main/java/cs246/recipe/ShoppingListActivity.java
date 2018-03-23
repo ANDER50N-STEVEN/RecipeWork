@@ -146,8 +146,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                     mItemEdit.setText("");
                     mValueEdit.setText("");
 
-                    Map<String, Ingredient> shopping = new HashMap<>();
-                    shopping.put( item, new Ingredient(item, value, units));
                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                     myRef.child("users").child(userID).child("SavedData").child("ShoppingList").setValue(shoppingList);
 
@@ -163,7 +161,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         mCheckoutButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                copyRecord( myRef.child("users").child(userID).child("ShoppingList"),  myRef.child("users").child(userID).child("Pantry"));
+                copyRecord();
                 myRef.child("users").child(userID).child("ShoppingList").removeValue();
                 Toast.makeText(getApplicationContext(), "Your shopping cart is now empty!",
                         Toast.LENGTH_LONG).show();
@@ -208,29 +206,21 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
     /**
      * Probably should be its own class
-     * @param fromPath
-     * @param toPath
+     *
      */
 
-    public void copyRecord(final DatabaseReference fromPath, final DatabaseReference toPath) {
-        fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void copyRecord() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<String> copy = new ArrayList<>();
-                    for(DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
-                    copy.add(childSnapshot.getValue().toString());
-                        myRef.child("users").child(userID).child("SavedData").child("ShoppingList").setValue(copy);
-                    }
-                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError firebaseError, DatabaseReference firebase) {
-                        if (firebaseError != null) {
-                            System.out.println("Copy failed");
-                        } else {
-                            System.out.println("Success");
-                        }
-                    }
-                });
+                for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
+                    Ingredient uInfo = ds.getValue(Ingredient.class);
+                    // Ingredient ingredient = new Ingredient(uInfo.getIngredient(), uInfo.getValue(), uInfo.getUnits());
+                    Log.d(TAG, "showData: name: " + uInfo.getIngredient());
+                    Log.d(TAG, "showData: email: " + uInfo.getValue());
+                    Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
+                    myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(uInfo);
+                }
             }
 
             @Override
