@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,18 +15,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,9 +68,9 @@ public class NewRecipe extends AppCompatActivity {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
 
-        /* ****************************
-         * for our save button
-         ***************************** */
+        /**
+         *
+         */
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -148,6 +138,12 @@ public class NewRecipe extends AppCompatActivity {
 
     }
 
+    /**
+     * Uploads Images from gallery of the phone
+     * @param requestCode A request code you passed to startActivityForResult()
+     * @param resultCode This is either RESULT_OK for successful or RESULT_CANCELED for operation failed
+     * @param data Carries the result data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -156,6 +152,7 @@ public class NewRecipe extends AppCompatActivity {
             mProgressDialog.setMessage("Uploading....");
             mProgressDialog.show();
             Uri uri = data.getData();
+            //creates a folder called photos in our firebase console(storage)
             StorageReference filepath = mStorage.child("photos").child(uri.getLastPathSegment());
             filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override

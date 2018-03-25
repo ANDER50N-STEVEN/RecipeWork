@@ -5,18 +5,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cs246.recipe.SignUp">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/add_image_button_text"
-        android:scaleType="centerCrop"
-        android:src="@drawable/blue_background"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context="cs246.recipe.SignUp"
+    android:background="@color/blueOfficial">
 
     <TextView
         android:id="@+id/welcomeLoginPage"
