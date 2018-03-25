@@ -89,7 +89,7 @@ public class NewRecipe extends AppCompatActivity {
         userID = user.getUid();
 
         spinner = findViewById(R.id.spinner);
-        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz"};
+        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz", ""};
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
@@ -139,6 +139,11 @@ public class NewRecipe extends AppCompatActivity {
                 String string = instructionsText.getText().toString();
                 RecipeObject newRecipe = new RecipeObject(ingredients, string);
                 myRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
+
+                ingredients.clear();
+                mAdapter.notifyDataSetChanged();
+                editor.clear();
+                editor.commit();
             }
         });
 
@@ -189,6 +194,10 @@ public class NewRecipe extends AppCompatActivity {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ingredients.clear();
+                mAdapter.notifyDataSetChanged();
+                editor.clear();
+                editor.commit();
             }
         });
 
