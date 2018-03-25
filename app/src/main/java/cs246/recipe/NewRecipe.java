@@ -6,75 +6,146 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewRecipe extends AppCompatActivity {
 
-    List<String> ingredients;
-    ListView ingredientList;
+    private List<Ingredient> ingredients;
+    private ListView ingredientList;
 
-    private EditText input2;
+    private EditText instructionsText, mItemEdit, mAmount, recipeName;
+    private String units;
     private Button saveButton;
-    private ListView newIngredient;
-    private EditText mItemEdit;
-    private ArrayAdapter<String> mAdapter;
     private StorageReference mStorage;
     private static final int GALLERY_INTENT = 2;
     private ProgressDialog mProgressDialog;
+
+    private static final String TAG = "AddToDatabase";
+    private FirebaseDatabase myDatabase;
+    private DatabaseReference myRef;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseUser user;
+    private String userID;
+
+    private Spinner spinner;
+    private IngredientArrayAdapter mAdapter;
+
+    private Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
-        //declare StorageReference for uploading photo
-        mStorage = FirebaseStorage.getInstance().getReference();
+        gson = new Gson();
 
-        mProgressDialog = new ProgressDialog(this);
+        myDatabase = FirebaseDatabase.getInstance();
+        myRef = myDatabase.getReference();
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+
+        user = mAuth.getCurrentUser();
+        userID = user.getUid();
+
+        spinner = findViewById(R.id.spinner);
+        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz", ""};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                units = adapterView.getItemAtPosition(i).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                units = "tsp";
+            }
+        });
+
         ingredients = new ArrayList<>();
+//        ingredients.add(new Ingredient("juice", "3", "floz"));
         ingredientList = (ListView) findViewById(R.id.listIngredient);
 
         /* ****************************
         *  Getting all the buttons and list view by their ID's
         ***************************** */
-        newIngredient = findViewById(R.id.listIngredient); //list view
         mItemEdit = findViewById(R.id.addIngredientField); // ingredient input field
-        ImageButton mAddButton = findViewById(R.id.add_ingredient_button); // + add image button
+        mAmount = findViewById(R.id.amount); // amount of ingredient
+        recipeName = findViewById(R.id.recipeName); // name of recipe
+        final ImageButton mAddButton = findViewById(R.id.add_ingredient_button); // + add image button
         Button mCaptureButton = findViewById(R.id.captureButton); //capture button
         Button mCancelButton = findViewById(R.id.cancelButton); //cancel button
-        input2 = findViewById(R.id.addInstructionsField); // instructions input field
+        instructionsText = findViewById(R.id.addInstructionsField); // instructions input field
         saveButton = findViewById(R.id.saveButton); // save button
 
-        //setting up ArrayAdapter for populating our list view
-        mAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
-        newIngredient.setAdapter(mAdapter);
+        // setting up ArrayAdapter for populating our list view
+        mAdapter = new IngredientArrayAdapter();
+        ingredientList.setAdapter(mAdapter);
 
         final SharedPreferences prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
 
-        /**
-         *
-         */
+        /* ****************************
+         * for our save button
+         ***************************** */
         saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
+            @Override public void onClick(View v)
             {
+                String name = recipeName.getText().toString();
+                String string = instructionsText.getText().toString();
+                RecipeObject newRecipe = new RecipeObject(ingredients, string);
+                myRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
+
+                recipeName.setText("");
+                instructionsText.setText("");
+                ingredients.clear();
+                mAdapter.notifyDataSetChanged();
+                editor.clear();
+                editor.commit();
             }
         });
 
@@ -85,13 +156,16 @@ public class NewRecipe extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
-                mAdapter.add(item);
+                String amount = mAmount.getText().toString();
+                Ingredient newIngredient = new Ingredient(item, amount, units);
+                mAdapter.add(newIngredient);
                 mAdapter.notifyDataSetChanged();
                 mItemEdit.setText("");
+                mAmount.setText("");
 
                 for (int i = 0; i < mAdapter.getCount(); ++i){
                     // This assumes you only have the list items in the SharedPreferences.
-                    editor.putString(String.valueOf(i), mAdapter.getItem(i));
+                    editor.putString(String.valueOf(i), gson.toJson(mAdapter.getIngredient(i)));
                 }
                 editor.commit();
             }
@@ -122,6 +196,13 @@ public class NewRecipe extends AppCompatActivity {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                recipeName.setText("");
+                instructionsText.setText("");
+
+                ingredients.clear();
+                mAdapter.notifyDataSetChanged();
+                editor.clear();
+                editor.commit();
             }
         });
 
@@ -129,7 +210,9 @@ public class NewRecipe extends AppCompatActivity {
         for (int i = 0;; ++i){
             final String str = prefs.getString(String.valueOf(i), "");
             if (!str.equals("")){
-                mAdapter.add(str);
+                Log.d("Ingredient", str);
+                Ingredient ingredient = gson.fromJson(str, Ingredient.class);
+                mAdapter.add(ingredient);
             } else {
                 break; // Empty String means the default value was returned.
             }
@@ -138,12 +221,6 @@ public class NewRecipe extends AppCompatActivity {
 
     }
 
-    /**
-     * Uploads Images from gallery of the phone
-     * @param requestCode A request code you passed to startActivityForResult()
-     * @param resultCode This is either RESULT_OK for successful or RESULT_CANCELED for operation failed
-     * @param data Carries the result data
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -152,7 +229,6 @@ public class NewRecipe extends AppCompatActivity {
             mProgressDialog.setMessage("Uploading....");
             mProgressDialog.show();
             Uri uri = data.getData();
-            //creates a folder called photos in our firebase console(storage)
             StorageReference filepath = mStorage.child("photos").child(uri.getLastPathSegment());
             filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -163,4 +239,46 @@ public class NewRecipe extends AppCompatActivity {
             });
         }
     }
+
+    public class IngredientArrayAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return ingredients.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = getLayoutInflater().inflate(R.layout.ingredient_view, null);
+
+            TextView amount = view.findViewById(R.id.amountView);
+            TextView units = view.findViewById(R.id.units);
+            TextView ingredient = view.findViewById(R.id.ingredient);
+
+            amount.setText(ingredients.get(i).getValue());
+            units.setText(ingredients.get(i).getUnits());
+            ingredient.setText(ingredients.get(i).getIngredient());
+
+            return view;
+        }
+
+        public void add(Ingredient ingredient) {
+            ingredients.add(ingredient);
+        }
+
+        public Ingredient getIngredient(Integer i) {
+            return ingredients.get(i);
+        }
+    }
+
 }
