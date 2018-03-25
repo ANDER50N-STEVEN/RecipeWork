@@ -23,8 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Activity to display the user's shopping list.  Will utilize Firebase Database
@@ -250,4 +248,3 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
     }
 }
-
