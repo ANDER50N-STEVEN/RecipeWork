@@ -5,6 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+/**
+ * to display list of recipes
+ * and has button to "add new recipe"
+ *
+ * @author Eriqua Eisele
+ */
+
 public class CookBookActivity extends AppCompatActivity {
 
     @Override

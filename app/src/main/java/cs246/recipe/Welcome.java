@@ -12,6 +12,13 @@ import android.widget.TextView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+/**
+ * Displays navigational buttons
+ * to take to other activities
+ *
+ * @author Eriqua Eisele
+ */
+
 public class Welcome extends AppCompatActivity  {
 
     private StorageReference mStorageRef;

@@ -6,43 +6,28 @@
     android:layout_height="match_parent"
     tools:context="cs246.recipe.ShoppingListActivity">
 
-    <ListView
-        android:id="@+id/shoppingList"
-        android:layout_width="fill_parent"
-        android:layout_height="407dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 
     <EditText
         android:id="@+id/item_editText"
         android:layout_width="156dp"
         android:layout_height="42dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:hint="@string/item_editText_hint"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/add_button"
-        app:layout_constraintHorizontal_bias="0.06"
+        app:layout_constraintBottom_toTopOf="@+id/add_button"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/add_button"
-        android:layout_width="71dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="231dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:text="@string/add_button_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <Button
@@ -63,31 +48,38 @@
         android:id="@+id/value_editText"
         android:layout_width="54dp"
         android:layout_height="41dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="24dp"
         android:ems="10"
         android:hint="#"
         android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/add_button"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@+id/add_button"
         app:layout_constraintStart_toEndOf="@+id/item_editText" />
 
     <Spinner
         android:id="@+id/spinner1"
-        android:layout_width="50dp"
+        android:layout_width="99dp"
         android:layout_height="44dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toTopOf="@+id/add_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/value_editText" />
+
+    <ListView
+        android:id="@+id/shoppingList"
+        android:layout_width="fill_parent"
+        android:layout_height="364dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/add_button"
+        app:layout_constraintBottom_toTopOf="@+id/value_editText"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/value_editText"
-        app:layout_constraintTop_toBottomOf="@+id/shoppingList" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>
 
