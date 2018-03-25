@@ -140,6 +140,8 @@ public class NewRecipe extends AppCompatActivity {
                 RecipeObject newRecipe = new RecipeObject(ingredients, string);
                 myRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
 
+                recipeName.setText("");
+                instructionsText.setText("");
                 ingredients.clear();
                 mAdapter.notifyDataSetChanged();
                 editor.clear();
@@ -194,6 +196,9 @@ public class NewRecipe extends AppCompatActivity {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                recipeName.setText("");
+                instructionsText.setText("");
+
                 ingredients.clear();
                 mAdapter.notifyDataSetChanged();
                 editor.clear();
