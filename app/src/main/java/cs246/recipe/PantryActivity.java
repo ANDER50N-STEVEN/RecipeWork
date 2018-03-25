@@ -43,6 +43,7 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     private Spinner spinner;
     private String units;
     private String userID;
+    private boolean load;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +58,11 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
         spinner.setOnItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        final FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
+        load = true;
 
         mPantryListView = findViewById(R.id.pantryList);
         mItemEdit = findViewById(R.id.item_editText);
@@ -68,6 +70,7 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
         Button mAddButton = findViewById(R.id.add_button);
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pantryList);
         mPantryListView.setAdapter(mAdapter);
+
 
         /**
          * This not only activates when a state change occurs but also when the activity
@@ -101,8 +104,10 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                 // whenever data at this location is updated.
                 Log.d(TAG, "onDataChange: Added information to database: \n" +
                         dataSnapshot.getValue());
-                showData(dataSnapshot);
-
+                if(load) {
+                    showData(dataSnapshot);
+                    load = false;
+                }
             }
             @Override
             public void onCancelled(DatabaseError error) {
@@ -130,8 +135,6 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                     mItemEdit.setText("");
                     mValueEdit.setText("");
 
-                    Map<String, Ingredient> pantry = new HashMap<>();
-                    pantry.put( item, new Ingredient(item, value, units));
                     myRef.child("users").child(userID).child("Pantry").child(item).setValue(ingredient);
 
 //                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(value).child(units);
@@ -146,18 +149,14 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     private void showData(DataSnapshot dataSnapshot){
-        for(DataSnapshot ds : dataSnapshot.getChildren()){
-            Ingredient uInfo = new Ingredient();
-            uInfo.setIngredient(ds.child(userID).child("Pantry").child("flour").getValue(Ingredient.class).getIngredient());
-            uInfo.setValue(ds.child(userID).child("Pantry").child("flour").getValue(Ingredient.class).getValue());
-            uInfo.setUnits(ds.child(userID).child("Pantry").child("flour").getValue(Ingredient.class).getUnits());
+        for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("Pantry").getChildren()){
+            Ingredient uInfo = ds.getValue(Ingredient.class);
 
             //display all the information
             Log.d(TAG, "showData: name: " + uInfo.getIngredient());
             Log.d(TAG, "showData: email: " + uInfo.getValue());
             Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
 
-            ArrayList<String> array  = new ArrayList<>();
             pantryList.add(uInfo.getValue() + " " + uInfo.getUnits() + " - " + uInfo.getIngredient());
 
             ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,pantryList);
@@ -165,6 +164,7 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
 
         }
     }
+
 
     @Override
     public void onStart() {
@@ -179,7 +179,6 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
 
 
     /**
