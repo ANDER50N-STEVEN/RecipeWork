@@ -207,16 +207,16 @@ public class NewRecipe extends AppCompatActivity {
         });
 
         //--------------------------------------------------
-        for (int i = 0;; ++i){
-            final String str = prefs.getString(String.valueOf(i), "");
-            if (!str.equals("")){
-                Log.d("Ingredient", str);
-                Ingredient ingredient = gson.fromJson(str, Ingredient.class);
-                mAdapter.add(ingredient);
-            } else {
-                break; // Empty String means the default value was returned.
-            }
-        }
+//        for (int i = 0;; ++i){
+//            final String str = prefs.getString(String.valueOf(i), "");
+//            if (!str.equals("")){
+//                Log.d("Ingredient", str);
+//           //     Ingredient ingredient = gson.fromJson(str, Ingredient.class);
+//        //        mAdapter.add(ingredient);
+//            } else {
+//                break; // Empty String means the default value was returned.
+//            }
+//        }
         //-----------------------------------------------------------
 
     }
