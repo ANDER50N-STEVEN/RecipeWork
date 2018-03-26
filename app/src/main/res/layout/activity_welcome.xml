@@ -5,7 +5,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cs246.recipe.Welcome">
+    tools:context="cs246.recipe.Welcome"
+    android:background="@color/sweetCream">
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
