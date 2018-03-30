@@ -36,7 +36,6 @@ import java.util.List;
 
 public class NewRecipe extends AppCompatActivity {
 
-    private List<Ingredient> ingredients;
     private ListView ingredientList;
 
     private EditText instructionsText, mItemEdit, mAmount, recipeName;
@@ -57,14 +56,14 @@ public class NewRecipe extends AppCompatActivity {
     private Spinner spinner;
     private IngredientArrayAdapter mAdapter;
 
-    private Gson gson;
+//    private Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
-        gson = new Gson();
+//        gson = new Gson();
 
         myDatabase = FirebaseDatabase.getInstance();
         myRef = myDatabase.getReference();
@@ -105,8 +104,6 @@ public class NewRecipe extends AppCompatActivity {
             }
         });
 
-        ingredients = new ArrayList<>();
-//        ingredients.add(new Ingredient("juice", "3", "floz"));
         ingredientList = (ListView) findViewById(R.id.listIngredient);
 
         /* ****************************
@@ -122,7 +119,8 @@ public class NewRecipe extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton); // save button
 
         // setting up ArrayAdapter for populating our list view
-        mAdapter = new IngredientArrayAdapter();
+        mAdapter = new IngredientArrayAdapter(getApplicationContext());
+
         ingredientList.setAdapter(mAdapter);
 
         final SharedPreferences prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
@@ -137,12 +135,12 @@ public class NewRecipe extends AppCompatActivity {
             {
                 String name = recipeName.getText().toString();
                 String string = instructionsText.getText().toString();
-                RecipeObject newRecipe = new RecipeObject(ingredients, string);
+                RecipeObject newRecipe = new RecipeObject(mAdapter.getIngredientList(), string);
                 myRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
 
                 recipeName.setText("");
                 instructionsText.setText("");
-                ingredients.clear();
+                mAdapter.clear();
                 mAdapter.notifyDataSetChanged();
                 editor.clear();
                 editor.commit();
@@ -165,7 +163,11 @@ public class NewRecipe extends AppCompatActivity {
 
                 for (int i = 0; i < mAdapter.getCount(); ++i){
                     // This assumes you only have the list items in the SharedPreferences.
-                    editor.putString(String.valueOf(i), gson.toJson(mAdapter.getIngredient(i)));
+                    try {
+//                        editor.putString(String.valueOf(i), gson.toJson(mAdapter.getItem(i)));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 editor.commit();
             }
@@ -199,7 +201,7 @@ public class NewRecipe extends AppCompatActivity {
                 recipeName.setText("");
                 instructionsText.setText("");
 
-                ingredients.clear();
+                mAdapter.clear();
                 mAdapter.notifyDataSetChanged();
                 editor.clear();
                 editor.commit();
@@ -211,8 +213,13 @@ public class NewRecipe extends AppCompatActivity {
             final String str = prefs.getString(String.valueOf(i), "");
             if (!str.equals("")){
                 Log.d("Ingredient", str);
-                Ingredient ingredient = gson.fromJson(str, Ingredient.class);
-                mAdapter.add(ingredient);
+                try {
+//                    Ingredient ingredient = gson.fromJson(str, Ingredient.class);
+//                    mAdapter.add(ingredient);
+//                    mAdapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 break; // Empty String means the default value was returned.
             }
@@ -237,47 +244,6 @@ public class NewRecipe extends AppCompatActivity {
                     mProgressDialog.dismiss();
                 }
             });
-        }
-    }
-
-    public class IngredientArrayAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return ingredients.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            view = getLayoutInflater().inflate(R.layout.ingredient_view, null);
-
-            TextView amount = view.findViewById(R.id.amountView);
-            TextView units = view.findViewById(R.id.units);
-            TextView ingredient = view.findViewById(R.id.ingredient);
-
-            amount.setText(ingredients.get(i).getValue());
-            units.setText(ingredients.get(i).getUnits());
-            ingredient.setText(ingredients.get(i).getIngredient());
-
-            return view;
-        }
-
-        public void add(Ingredient ingredient) {
-            ingredients.add(ingredient);
-        }
-
-        public Ingredient getIngredient(Integer i) {
-            return ingredients.get(i);
         }
     }
 

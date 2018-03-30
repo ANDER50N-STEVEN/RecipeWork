@@ -68,4 +68,10 @@ public class Welcome extends AppCompatActivity  {
         Intent intent = new Intent(this, PantryActivity.class);
         startActivity(intent);
     }
+
+    public void displayRecipe(View view) {
+        Intent intent = new Intent(this, DisplayRecipe.class);
+        intent.putExtra("recipeName", "subi");
+        startActivity(intent);
+    }
 }

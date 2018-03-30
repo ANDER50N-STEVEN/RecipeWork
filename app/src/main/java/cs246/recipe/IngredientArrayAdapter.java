@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,8 +19,8 @@ public class IngredientArrayAdapter extends BaseAdapter {
     List<Ingredient> ingredientList;
     Context mContext;
 
-    IngredientArrayAdapter(List<Ingredient> ingredients, Context context) {
-        ingredientList = ingredients;
+    IngredientArrayAdapter(Context context) {
+        ingredientList = new ArrayList<>();
         mContext = context;
     }
 
@@ -40,7 +41,8 @@ public class IngredientArrayAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        view = LayoutInflater.from(mContext).inflate(R.layout.ingredient_view, null);
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(R.layout.ingredient_view, null);
 
         TextView amount = (TextView) view.findViewById(R.id.amountView);
         TextView units = (TextView) view.findViewById(R.id.units);
@@ -50,6 +52,18 @@ public class IngredientArrayAdapter extends BaseAdapter {
         units.setText(ingredientList.get(i).getUnits());
         ingredient.setText(ingredientList.get(i).getIngredient());
 
-        return null;
+        return view;
+    }
+
+    public void add(Ingredient ingredient) {
+        ingredientList.add(ingredient);
+    }
+
+    public List<Ingredient> getIngredientList() {
+        return ingredientList;
+    }
+
+    public void clear() {
+        ingredientList.clear();
     }
 }

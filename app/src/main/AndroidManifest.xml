@@ -22,11 +22,11 @@
         <activity android:name=".PantryActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".NewRecipe" />
-        <activity android:name=".Recipe" />
         <activity android:name=".Welcome" />
         <activity android:name=".SignUp" />
         <activity android:name=".ForgetPassword" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".DisplayRecipe"></activity>
     </application>
 
 </manifest>
