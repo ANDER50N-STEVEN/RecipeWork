@@ -52,6 +52,8 @@ public class NewRecipe extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser user;
     private String userID;
+    int num;
+    int den;
 
     private Spinner spinner;
     private IngredientArrayAdapter mAdapter;
@@ -62,6 +64,8 @@ public class NewRecipe extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
+        num = 0;
+        den = 1;
 
 //        gson = new Gson();
 
@@ -154,8 +158,8 @@ public class NewRecipe extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
-                String amount = mAmount.getText().toString();
-                Ingredient newIngredient = new Ingredient(item, amount, units);
+                int amount = Integer.parseInt(mAmount.getText().toString());
+                Ingredient newIngredient = new Ingredient(item, amount, num, den, units);
                 mAdapter.add(newIngredient);
                 mAdapter.notifyDataSetChanged();
                 mItemEdit.setText("");

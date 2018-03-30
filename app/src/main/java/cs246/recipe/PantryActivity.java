@@ -36,6 +36,8 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     private EditText mValueEdit;
     private ArrayAdapter<String> mAdapter;
     ArrayList<String> pantryList = new ArrayList<>();
+    private int num;
+    private int den;
 
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
@@ -49,9 +51,11 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
+        num = 0;
+        den = 1;
 
         spinner = findViewById(R.id.spinner1);
-        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz"};
+        String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
         ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
         madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(madapter);
@@ -121,13 +125,14 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
                 String value = mValueEdit.getText().toString();
+                final int nValue = Integer.parseInt(value);
 
                 Log.d(TAG, "Ingredient: " + item + "  Value: " + value + "\n");
 
 
                 //handle the exception if the EditText fields are null
                 if (!item.equals("") && !value.equals("")) {
-                    Ingredient ingredient = new Ingredient(item, value, units);
+                    Ingredient ingredient = new Ingredient(item, nValue, num, den, units);
                     pantryList.add(value + " " + units + " - " + item);
                     //    mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingList);
                     mPantryListView.setAdapter(mAdapter);
