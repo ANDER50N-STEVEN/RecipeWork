@@ -3,42 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/sweetCream">
+
+    <EditText
+        android:id="@+id/recipeName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="56dp"
+        android:ems="10"
+        android:hint="@string/recipe_name"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/addIngredientField"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@string/newIngredient_editText_hint"
-        app:layout_constraintEnd_toStartOf="@+id/amountView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recipeName" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recipeName" />
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_ingredient_button"
-        android:layout_width="73dp"
-        android:layout_height="49dp"
-        android:layout_marginRight="8dp"
-        android:contentDescription="@string/add_image_button_text"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recipeName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addIngredientField"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/listIngredient"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteY="282dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/addInstructionsField"
@@ -55,48 +71,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/captureButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1"
-                android:text="@string/capture_button_text"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/saveButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addInstructionsField" />
-
-            <Button
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="28dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/save_button_text"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addInstructionsField" />
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toStartOf="@+id/cancelButton"
+                app:layout_constraintTop_toBottomOf="@+id/addInstructionsField"
+                app:srcCompat="@android:drawable/ic_menu_save" />
 
-            <Button
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/cancel_button_text"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/saveButton"
-                app:layout_constraintTop_toBottomOf="@+id/addInstructionsField" />
+                app:layout_constraintTop_toBottomOf="@+id/addInstructionsField"
+                app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
@@ -104,46 +101,58 @@
     <ListView
         android:id="@+id/listIngredient"
         android:layout_width="0dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="12dp"
-        tools:listitem="@layout/ingredient_view"
+        android:layout_height="93dp"
+        android:layout_marginBottom="236dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addIngredientField" />
-
-    <EditText
-        android:id="@+id/recipeName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:textAlignment="center"
-        android:ems="10"
-        android:hint="Recipe Name"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:listitem="@layout/ingredient_view" />
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="49dp"
-        android:autofillHints="Hint"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/add_ingredient_button"
-        app:layout_constraintTop_toBottomOf="@+id/recipeName" />
+        app:layout_constraintTop_toBottomOf="@+id/addIngredientField" />
 
     <EditText
         android:id="@+id/amount"
         android:layout_width="51dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="#"
+        android:hint="@string/add_number"
         android:inputType="numberDecimal"
         app:layout_constraintEnd_toStartOf="@+id/spinner"
-        app:layout_constraintTop_toBottomOf="@+id/recipeName" />
+        app:layout_constraintTop_toBottomOf="@+id/addIngredientField" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="131dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="56dp"
+        android:contentDescription="@string/add_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:color/holo_blue_bright" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/captureButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
 </android.support.constraint.ConstraintLayout>

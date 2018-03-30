@@ -27,4 +27,7 @@
     <string name="send_email">Send Request</string>
     <string name="account_recovery">Account Recovery</string>
     <string name="enter_name">Name</string>
+    <string name="add_image">Add new image</string>
+    <string name="add_number">#</string>
+    <string name="recipe_name">Recipe Name</string>
 </resources>

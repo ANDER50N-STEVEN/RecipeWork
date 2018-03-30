@@ -23,6 +23,8 @@ public class DisplayRecipe extends AppCompatActivity {
     FirebaseUser user;
     String userID;
     String recipeName;
+    int num;
+    int den;
 
     TextView recipeNameEdit;
     ListView ingredientsList;
@@ -35,6 +37,8 @@ public class DisplayRecipe extends AppCompatActivity {
         recipeNameEdit = (TextView) findViewById(R.id.R_recipeName);
         ingredientsList = (ListView) findViewById(R.id.R_ingredientList);
         instructionsField = (TextView) findViewById(R.id.R_instructionsField);
+        num = 0;
+        den = 1;
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -70,9 +74,9 @@ public class DisplayRecipe extends AppCompatActivity {
                                 Log.d("dataCapture", "Has child ingredients");
                                 for (DataSnapshot instructions : dataSnapshot.child("ingredients").getChildren()) {
                                     String units = String.valueOf(instructions.child("units").getValue());
-                                    String value = String.valueOf(instructions.child("value").getValue());
+                                    int value = Integer.parseInt(instructions.child("value").getValue().toString());
                                     String ingredientString = String.valueOf(instructions.child("ingredient").getValue());
-                                    Ingredient ingredient = new Ingredient(ingredientString, value, units);
+                                    Ingredient ingredient = new Ingredient(ingredientString, value, num, den, units);
                                     adapter.add(ingredient);
                                 }
                             }
