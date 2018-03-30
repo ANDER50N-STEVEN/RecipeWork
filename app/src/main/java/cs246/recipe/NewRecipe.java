@@ -311,11 +311,6 @@ public class NewRecipe extends AppCompatActivity {
                             }, 500);
 
                             Toast.makeText(NewRecipe.this, "Upload successful", Toast.LENGTH_LONG).show();
-//                            UploadImageObject upload = new UploadImageObject(recipeName.getText().toString().trim(),
-//                                    taskSnapshot.getDownloadUrl().toString());
-//                            String uploadId = mDatabaseRef.push().getKey();
-//                            mDatabaseRef.child("photos").child(userID).child(uploadId).setValue(upload);
-//                            mStorageRef.child("users").child(userID).child("photos").child(recipeName.getText().toString()).putFile(mImageUri);
                             mProgressDialog.dismiss();
                         }
                     })
