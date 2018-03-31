@@ -48,9 +48,9 @@ public class IngredientArrayAdapter extends BaseAdapter {
         TextView units = (TextView) view.findViewById(R.id.units);
         TextView ingredient = (TextView) view.findViewById(R.id.ingredient);
 
-        amount.setText(ingredientList.get(i).getValue());
-        units.setText(ingredientList.get(i).getUnits());
-        ingredient.setText(ingredientList.get(i).getIngredient());
+        amount.setText(String.valueOf(ingredientList.get(i).getValue()));
+        units.setText(String.valueOf(ingredientList.get(i).getUnits()));
+        ingredient.setText(String.valueOf(ingredientList.get(i).getIngredient()));
 
         return view;
     }

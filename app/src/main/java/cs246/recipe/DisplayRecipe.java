@@ -1,6 +1,7 @@
 package cs246.recipe;
 
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +24,6 @@ public class DisplayRecipe extends AppCompatActivity {
     FirebaseUser user;
     String userID;
     String recipeName;
-    int num;
-    int den;
 
     TextView recipeNameEdit;
     ListView ingredientsList;
@@ -34,11 +33,9 @@ public class DisplayRecipe extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_recipe);
-        recipeNameEdit = (TextView) findViewById(R.id.R_recipeName);
-        ingredientsList = (ListView) findViewById(R.id.R_ingredientList);
-        instructionsField = (TextView) findViewById(R.id.R_instructionsField);
-        num = 0;
-        den = 1;
+        recipeNameEdit = findViewById(R.id.R_recipeName);
+        ingredientsList = findViewById(R.id.R_ingredientList);
+        instructionsField = findViewById(R.id.R_instructionsField);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -72,19 +69,45 @@ public class DisplayRecipe extends AppCompatActivity {
 
                             if (ds.hasChild("ingredients")) {
                                 Log.d("dataCapture", "Has child ingredients");
-                                for (DataSnapshot instructions : dataSnapshot.child("ingredients").getChildren()) {
-                                    String units = String.valueOf(instructions.child("units").getValue());
-                                    int value = Integer.parseInt(instructions.child("value").getValue().toString());
-                                    String ingredientString = String.valueOf(instructions.child("ingredient").getValue());
-                                    Ingredient ingredient = new Ingredient(ingredientString, value, num, den, units);
-                                    adapter.add(ingredient);
+                                if (ds.child("ingredients").hasChildren()) {
+                                    Log.d("dataCapture", "ingredients has children");
+                                    for (DataSnapshot ingredient : ds.child("ingredients").getChildren()) {
+                                        String units = "Error";
+                                        Integer value = 0;
+                                        Integer denominator = 0;
+                                        Integer numerator = 0;
+
+                                        String ingredientString = "Error";
+
+                                        if (ingredient.hasChild("units")) {
+                                            Log.d("dataCapture", "Has child units");
+                                            units = String.valueOf(ingredient.child("units").getValue());
+                                        }
+                                        if (ingredient.hasChild("value")) {
+                                            Log.d("dataCapture", "Has child value");
+                                            value = Integer.valueOf(String.valueOf(ingredient.child("value").getValue()));
+                                        }
+                                        if (ingredient.hasChild("ingredient")) {
+                                            Log.d("dataCapture", "Has child ingredient");
+                                            ingredientString = String.valueOf(ingredient.child("ingredient").getValue());
+                                        }
+                                        if (ingredient.hasChild("numerator")) {
+                                            Log.d("dataCapture", "Has child numerator");
+                                            numerator = Integer.valueOf(String.valueOf(ingredient.child("numerator")));
+                                        }
+                                        if (ingredient.hasChild("denominator")) {
+                                            Log.d("dataCapture", "Has child denominator");
+                                            denominator = Integer.valueOf(String.valueOf(ingredient.child("denominator")));
+                                        }
+                                        Ingredient ingredientObject = new Ingredient(ingredientString, value, numerator, denominator, units);
+                                        adapter.add(ingredientObject);
+                                    }
                                 }
                             }
-
-                            adapter.notifyDataSetChanged();
                         }
                     }
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -95,3 +118,4 @@ public class DisplayRecipe extends AppCompatActivity {
     }
 
 }
+

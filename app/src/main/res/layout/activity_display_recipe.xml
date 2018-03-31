@@ -8,7 +8,7 @@
 
     <ImageView
         android:id="@+id/imageView11"
-        android:layout_width="357dp"
+        android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -22,29 +22,38 @@
 
     <ListView
         android:id="@+id/R_ingredientList"
-        android:layout_width="360dp"
-        android:layout_height="133dp"
+        android:layout_width="0dp"
+        android:layout_height="186dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="128dp"
-        tools:listitem="@layout/ingredient_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/ingredient_view" />
 
-    <TextView
-        android:id="@+id/R_instructionsField"
-        android:layout_width="366dp"
-        android:layout_height="168dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+    <ScrollView
+        android:id="@+id/R_instructionScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="@string/add_button_text"
+        app:layout_constraintBottom_toTopOf="@+id/R_goBack"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/R_ingredientList"
-        tools:text="Recipe Instructions" />
+        app:layout_constraintTop_toBottomOf="@+id/R_ingredientList">
+
+        <TextView
+            android:id="@+id/R_instructionsField"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/add_button_text"
+            android:textSize="25sp"
+            tools:text="Recipe Instructions" />
+
+    </ScrollView>
 
     <Button
         android:id="@+id/R_goBack"
@@ -53,13 +62,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/add_button_text"
+        android:text="@string/r_go_back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/R_make"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/R_instructionsField"
-        tools:text="Go Back" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/R_make"
@@ -68,13 +74,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/add_button_text"
+        android:text="@string/r_make"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/R_instructionsField"
-        tools:text="Make" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/R_made"
@@ -83,13 +86,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/add_button_text"
+        android:text="@string/r_made"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/R_make"
-        app:layout_constraintTop_toBottomOf="@+id/R_instructionsField"
-        tools:text="Made" />
+        app:layout_constraintStart_toEndOf="@+id/R_make" />
 
     <TextView
         android:id="@+id/R_recipeName"

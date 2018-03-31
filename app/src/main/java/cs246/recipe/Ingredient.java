@@ -12,7 +12,7 @@ public class Ingredient {
     private int numerator;
     private int denominator;
     private String display;
-    public Ingredient(){}
+    public Ingredient(String ingredientString, String value, String units){}
     public Ingredient(String ingredient, int value, int numerator, int denominator, String units){
         this.ingredient = ingredient;
         this.value = value;
