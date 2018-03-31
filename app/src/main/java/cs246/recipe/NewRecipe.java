@@ -41,15 +41,12 @@ import java.util.List;
 
 public class NewRecipe extends AppCompatActivity {
 
-    private List<Ingredient> ingredients;
     private ListView ingredientList;
 
     private EditText instructionsText, mItemEdit, mAmount, recipeName;
     private String units;
     private StorageReference mStorage;
     private FloatingActionButton mSaveButton;
-    //private ListView newIngredient;
-    //private ArrayAdapter<String> mAdapter;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
     private static final int GALLERY_INTENT = 2;
@@ -71,16 +68,12 @@ public class NewRecipe extends AppCompatActivity {
     private Spinner spinner;
     private IngredientArrayAdapter mAdapter;
 
-//    private Gson gson;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
         num = 0;
         den = 1;
-
-//        gson = new Gson();
 
         myDatabase = FirebaseDatabase.getInstance();
         myRef = myDatabase.getReference();
@@ -113,23 +106,26 @@ public class NewRecipe extends AppCompatActivity {
         mProgressDialog = new ProgressDialog(this);
 
         spinner = findViewById(R.id.spinner);
-        String[] measurement = new String[]{"tsp", "tbs", "cup", "floz", ""};
+        final String[] measurement = new String[]{"", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                units = adapterView.getItemAtPosition(i).toString();
+                units = "";
+                if (!adapterView.getItemAtPosition(i).toString().equals(""))
+                    units = " ";
+                units += adapterView.getItemAtPosition(i).toString();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                units = "tsp";
+                units = "";
             }
         });
 
-        ingredients = new ArrayList<>();
+//        ingredients = new ArrayList<>();
         ingredientList = (ListView) findViewById(R.id.listIngredient);
 
         /*
@@ -162,14 +158,14 @@ public class NewRecipe extends AppCompatActivity {
             {
                 String name = recipeName.getText().toString();
                 String string = instructionsText.getText().toString();
-                RecipeObject newRecipe = new RecipeObject(ingredients, string);
+                RecipeObject newRecipe = new RecipeObject(mAdapter.getIngredientList(), string);
                 mDatabaseRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
 
-                if (mUploadTask != null && mUploadTask.isInProgress()) {
-                    Toast.makeText(NewRecipe.this, "Upload in progress", Toast.LENGTH_SHORT).show();
-                } else {
-                    uploadFile();
-                }
+//                if (mUploadTask != null && mUploadTask.isInProgress()) {
+//                    Toast.makeText(NewRecipe.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    uploadFile();
+//                }
 
                 recipeName.setText("");
                 instructionsText.setText("");
@@ -177,6 +173,8 @@ public class NewRecipe extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 editor.clear();
                 editor.commit();
+
+                finish();
             }
         });
 
@@ -187,22 +185,24 @@ public class NewRecipe extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String item = mItemEdit.getText().toString();
-                int amount = Integer.parseInt(mAmount.getText().toString());
-                Ingredient newIngredient = new Ingredient(item, amount, num, den, units);
+                String measurementString = mAmount.getText().toString();
+
+                MixedFraction measurement = new MixedFraction(measurementString);
+                Ingredient newIngredient = new Ingredient(item, units, measurement);
                 mAdapter.add(newIngredient);
                 mAdapter.notifyDataSetChanged();
                 mItemEdit.setText("");
                 mAmount.setText("");
 
-                for (int i = 0; i < mAdapter.getCount(); ++i){
-                    // This assumes you only have the list items in the SharedPreferences.
-                    try {
-//                        editor.putString(String.valueOf(i), gson.toJson(mAdapter.getItem(i)));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                editor.commit();
+//                for (int i = 0; i < mAdapter.getCount(); ++i){
+//                    // This assumes you only have the list items in the SharedPreferences.
+//                    try {
+////                        editor.putString(String.valueOf(i), gson.toJson(mAdapter.getItem(i)));
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                editor.commit();
             }
         });
 

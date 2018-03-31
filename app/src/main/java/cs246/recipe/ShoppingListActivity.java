@@ -188,7 +188,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                                         }else
                                             display = (nValue + " " + units);
                                     }
-                                    Ingredient ingredient = new Ingredient(item, nValue, num, den, units, display);
+                                    MixedFraction measureent = new MixedFraction(nValue, num, den);
+                                    Ingredient ingredient = new Ingredient(item, units, measureent, display);
                                     shoppingList.add(display + " - " + item);
                                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                                     mShoppingListView.setAdapter(mAdapter);
@@ -203,7 +204,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                                             snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString(),
                                             item);
 
-                                    Ingredient ingredient = new Ingredient(item, nValue, num, den, units, display);
+                                    MixedFraction measurement = new MixedFraction(nValue, num, den);
+                                    Ingredient ingredient = new Ingredient(item, units, measurement, display);
                                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                                     mItemEdit.setText("");
                                     mValueEdit.setText("");
@@ -320,9 +322,9 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             //display all the information
             assert uInfo != null;
             Log.d(TAG, "showData: database ingredient: " + uInfo.getIngredient());
-            Log.d(TAG, "showData: database value: " + uInfo.getValue());
+            Log.d(TAG, "showData: database value: " + uInfo.getMeasurement().getDisplay());
             Log.d(TAG, "showData: database units: " + uInfo.getUnits());
-            Log.d(TAG, "showData: trial 1: " + uInfo.getValue());
+            Log.d(TAG, "showData: trial 1: " + uInfo.getMeasurement().getDisplay());
             shoppingList.add(uInfo.getDisplay() + " - " + uInfo.getIngredient());
             ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,shoppingList);
             mShoppingListView.setAdapter(adapter);
@@ -495,7 +497,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                     // Ingredient ingredient = new Ingredient(uInfo.getIngredient(), uInfo.getValue(), uInfo.getUnits());
                     assert uInfo != null;
                     Log.d(TAG, "showData: name: " + uInfo.getIngredient());
-                    Log.d(TAG, "showData: value: " + uInfo.getValue());
+                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getDisplay());
                     Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
                     myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(uInfo);
                 }

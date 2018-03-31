@@ -132,7 +132,8 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
 
                 //handle the exception if the EditText fields are null
                 if (!item.equals("") && !value.equals("")) {
-                    Ingredient ingredient = new Ingredient(item, nValue, num, den, units);
+                    MixedFraction measurement = new MixedFraction(nValue, num, den);
+                    Ingredient ingredient = new Ingredient(item, units, measurement);
                     pantryList.add(value + " " + units + " - " + item);
                     //    mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingList);
                     mPantryListView.setAdapter(mAdapter);
@@ -159,10 +160,10 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
 
             //display all the information
             Log.d(TAG, "showData: name: " + uInfo.getIngredient());
-            Log.d(TAG, "showData: email: " + uInfo.getValue());
+            Log.d(TAG, "showData: email: " + uInfo.getMeasurement().getDisplay());
             Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
 
-            pantryList.add(uInfo.getValue() + " " + uInfo.getUnits() + " - " + uInfo.getIngredient());
+            pantryList.add(uInfo.getMeasurement().getDisplay() + " " + uInfo.getUnits() + " - " + uInfo.getIngredient());
 
             ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,pantryList);
             mPantryListView.setAdapter(adapter);

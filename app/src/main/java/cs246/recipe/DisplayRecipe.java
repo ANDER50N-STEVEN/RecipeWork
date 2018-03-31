@@ -5,6 +5,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,7 +43,6 @@ public class DisplayRecipe extends AppCompatActivity {
 
         Intent intent = getIntent();
         recipeName = intent.getStringExtra("recipeName");
-        recipeName = "Crepe";
         recipeNameEdit.setText(recipeName);
 
         adapter = new IngredientArrayAdapter(getApplicationContext());
@@ -73,9 +73,10 @@ public class DisplayRecipe extends AppCompatActivity {
                                     Log.d("dataCapture", "ingredients has children");
                                     for (DataSnapshot ingredient : ds.child("ingredients").getChildren()) {
                                         String units = "Error";
-                                        Integer value = 0;
+                                        Integer whole = 0;
                                         Integer denominator = 0;
                                         Integer numerator = 0;
+                                        MixedFraction measurement;
 
                                         String ingredientString = "Error";
 
@@ -83,23 +84,30 @@ public class DisplayRecipe extends AppCompatActivity {
                                             Log.d("dataCapture", "Has child units");
                                             units = String.valueOf(ingredient.child("units").getValue());
                                         }
-                                        if (ingredient.hasChild("value")) {
-                                            Log.d("dataCapture", "Has child value");
-                                            value = Integer.valueOf(String.valueOf(ingredient.child("value").getValue()));
-                                        }
                                         if (ingredient.hasChild("ingredient")) {
                                             Log.d("dataCapture", "Has child ingredient");
                                             ingredientString = String.valueOf(ingredient.child("ingredient").getValue());
                                         }
-                                        if (ingredient.hasChild("numerator")) {
-                                            Log.d("dataCapture", "Has child numerator");
-                                            numerator = Integer.valueOf(String.valueOf(ingredient.child("numerator")));
+
+                                        if (ingredient.hasChild("measurement")) {
+                                            if (ingredient.child("measurement").hasChildren()) {
+                                                if (ingredient.child("measurement").hasChild("whole")) {
+                                                    Log.d("dataCapture", "Has child whole");
+                                                    whole = Integer.valueOf(String.valueOf(ingredient.child("measurement").child("whole").getValue()));
+                                                }
+                                                if (ingredient.child("measurement").hasChild("numerator")) {
+                                                    Log.d("dataCapture", "Has child numerator");
+                                                    numerator = Integer.valueOf(String.valueOf(ingredient.child("measurement").child("numerator").getValue()));
+                                                }
+                                                if (ingredient.child("measurement").hasChild("denominator")) {
+                                                    Log.d("dataCapture", "Has child denominator");
+                                                    denominator = Integer.valueOf(String.valueOf(ingredient.child("measurement").child("denominator").getValue()));
+                                                }
+                                            }
                                         }
-                                        if (ingredient.hasChild("denominator")) {
-                                            Log.d("dataCapture", "Has child denominator");
-                                            denominator = Integer.valueOf(String.valueOf(ingredient.child("denominator")));
-                                        }
-                                        Ingredient ingredientObject = new Ingredient(ingredientString, value, numerator, denominator, units);
+
+                                        measurement = new MixedFraction(whole, numerator, denominator);
+                                        Ingredient ingredientObject = new Ingredient(ingredientString, units, measurement);
                                         adapter.add(ingredientObject);
                                     }
                                 }
@@ -115,6 +123,10 @@ public class DisplayRecipe extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void R_goBackClick(View view) {
+        finish();
     }
 
 }

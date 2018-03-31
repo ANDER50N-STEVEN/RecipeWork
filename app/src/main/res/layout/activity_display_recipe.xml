@@ -49,9 +49,7 @@
             android:id="@+id/R_instructionsField"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/add_button_text"
-            android:textSize="25sp"
-            tools:text="Recipe Instructions" />
+            android:textSize="25sp" />
 
     </ScrollView>
 
@@ -63,6 +61,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/r_go_back"
+        android:onClick="R_goBackClick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/R_make"
         app:layout_constraintStart_toStartOf="parent" />

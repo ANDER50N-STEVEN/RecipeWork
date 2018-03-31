@@ -46,11 +46,14 @@ public class IngredientArrayAdapter extends BaseAdapter {
 
         TextView amount = (TextView) view.findViewById(R.id.amountView);
         TextView units = (TextView) view.findViewById(R.id.units);
-        TextView ingredient = (TextView) view.findViewById(R.id.ingredient);
+        TextView ingredientView = (TextView) view.findViewById(R.id.ingredient);
 
-        amount.setText(String.valueOf(ingredientList.get(i).getValue()));
-        units.setText(String.valueOf(ingredientList.get(i).getUnits()));
-        ingredient.setText(String.valueOf(ingredientList.get(i).getIngredient()));
+        Ingredient ingredient = ingredientList.get(i);
+        MixedFraction measurement = ingredient.getMeasurement();
+
+        amount.setText(String.valueOf(measurement.getDisplay()));
+        units.setText(String.valueOf(ingredient.getUnits()));
+        ingredientView.setText(String.valueOf(ingredient.getIngredient()));
 
         return view;
     }

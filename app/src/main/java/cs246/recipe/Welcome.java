@@ -71,7 +71,7 @@ public class Welcome extends AppCompatActivity  {
 
     public void displayRecipe(View view) {
         Intent intent = new Intent(this, DisplayRecipe.class);
-        intent.putExtra("recipeName", "subi");
+        intent.putExtra("recipeName", "Fool Proof Pie Crust");
         startActivity(intent);
     }
 }
