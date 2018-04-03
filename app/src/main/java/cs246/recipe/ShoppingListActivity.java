@@ -62,6 +62,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
     private int den;
     private int nValue;
     private String display;
+    private MixedFraction input;
 
 
     private ArrayList<String> shoppingList = new ArrayList<>();
@@ -72,8 +73,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         setContentView(R.layout.activity_shopping_list);
 
         spinner = findViewById(R.id.spinner1);
-        String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
-        ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        final String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
+        final ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
         madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(madapter);
         spinner.setOnItemSelectedListener(this);
@@ -149,10 +150,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             public void onClick(View v) {
                 final String item = mItemEdit.getText().toString();
                 final String value = mValueEdit.getText().toString();
-                //if(value.contains("/")){
-              //      String [] part= value.split("/");
-
-              //  }
+                input = new MixedFraction(value);
 
                 Log.d(TAG, "Ingredient: " + item + "  Value: " + value + "\n");
 
@@ -163,33 +161,17 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                     rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            if (value.contains("/")) {
-                                fraction = true;
-                                String[] rat = value.split("/");
-                                num = Integer.parseInt(rat[0]);
-                                den = Integer.parseInt(rat[1]);
-                                nValue = 0;
-                                Log.d(TAG, "Ingredient: " + item + "  Value: " + num + " / " + den + "\n");
-                            }else{
-                                wholeNum = true;
-                                nValue = Integer.parseInt(value);
-                                Log.d(TAG, "Ingredient after parsing it: " + nValue + "     " + units + "\n");
-                                den = 1;
-                                num = 0;
-                            }
-
                                 if (!snapshot.child("users").child(userID).child("ShoppingList").hasChild(item)) {
 
-                                    if(fraction){
-                                            display = (num + "/" + den + " " + units);
+                                    if(input.getWhole() == 0){
+                                            display = (input.getNumerator() + "/" + input.getDenominator() + " " + units);
                                     }else{
-                                        if (wholeNum && fraction) {
-                                            display = (nValue + " " + num + "/" + den + " " + units);
+                                        if (input.getNumerator() != 0) {
+                                            display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
                                         }else
-                                            display = (nValue + " " + units);
+                                            display = (input.getWhole() + " " + units);
                                     }
-                                    MixedFraction measureent = new MixedFraction(nValue, num, den);
-                                    Ingredient ingredient = new Ingredient(item, units, measureent, display);
+                                    Ingredient ingredient = new Ingredient(item, units, input, display);
                                     shoppingList.add(display + " - " + item);
                                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                                     mShoppingListView.setAdapter(mAdapter);
@@ -198,14 +180,14 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                                     mValueEdit.setText("");
                                     toastMessage("New Information has been saved.");
                                 } else {
-                                    convertData(Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("numerator").getValue().toString()),
-                                            Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("denominator").getValue().toString()),
-                                            Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("value").getValue().toString()),
+                                    convertData(Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("numerator").getValue().toString()),
+                                            Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("denominator").getValue().toString()),
+                                            Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("whole").getValue().toString()),
                                             snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString(),
                                             item);
 
-                                    MixedFraction measurement = new MixedFraction(nValue, num, den);
-                                    Ingredient ingredient = new Ingredient(item, units, measurement, display);
+                                   // MixedFraction measurement = new MixedFraction(nValue, num, den);
+                                    Ingredient ingredient = new Ingredient(item, units, input, display);
                                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                                     mItemEdit.setText("");
                                     mValueEdit.setText("");
@@ -220,7 +202,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
                         }
                     });
-
+                    spinner.setSelection(0);
                 } else {
                     toastMessage("Fill out all the fields");
                 }
@@ -332,137 +314,223 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         }
     }
 
-    private int gcd(int oldD, int newD){
-        while (newD > 0)
-        {
-            int temp = newD;
-            newD = oldD % newD; // % is remainder
-            oldD = temp;
-        }
-        return oldD;
+    private int gcd(int a, int b){
+        if(a == b)
+            return a;
+       if(a == 0)
+           return b;
+       return gcd((b%a), a);
     }
 
     private void convertData(int numerator, int denominator, int oldValue, String dUnits, String item){
-        Log.d(TAG, "showData: nValue: " + nValue + "\n");
-        Log.d(TAG, "showData: nValue: " + oldValue + "\n");
+//        Log.d(TAG, "showData: nValue: " + nValue + "\n");
+//        Log.d(TAG, "showData: nValue: " + oldValue + "\n");
+        if(denominator == 0)
+            denominator = 1;
+        if(input.getDenominator() == 0)
+            input.setDenominator(1);
         int multiplier = 1;
         int multiplier2 = 1;
-        if(wholeNum)
-            num = (nValue * den);
-        Log.d(TAG, "showData: num: " + num + "\n");
-        Log.d(TAG, "showData: den: " + den + "\n");
-        if(oldValue != 0)
-            numerator += (oldValue * denominator);
-        if(den != denominator){
-            multiplier = (gcd(denominator, den) / den);
-            multiplier2 = (gcd(denominator, den) / denominator);
-            den = gcd(denominator, den);
+//        if(wholeNum)
+//            num = (nValue * den);
+//        Log.d(TAG, "showData: num: " + num + "\n");
+//        Log.d(TAG, "showData: den: " + den + "\n");
+//        if(oldValue != 0)
+//            numerator += (oldValue * denominator);
+        if(input.getDenominator() != denominator){
+            multiplier2 = (input.getDenominator() / gcd(denominator, input.getDenominator()));
+            multiplier = (denominator / gcd(denominator, input.getDenominator()));
+//            den = gcd(denominator, den);
         }
-        num *= multiplier;
-        numerator *= multiplier2;
-        wholeNum = false;
-        fraction = true;
+//        num *= multiplier;
+//        numerator *= multiplier2;
+//        wholeNum = false;
+//        fraction = true;
+        Log.d(TAG, "showData: before switches\n");
+        Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+        Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+        Log.d(TAG, "showData: numerator " + numerator + "\n");
+        Log.d(TAG, "showData: denominator " + denominator + "\n");
+        Log.d(TAG, "showData: multiplier1 " + multiplier + "\n");
+        Log.d(TAG, "showData: multiplier2 " + multiplier2 + "\n");
 
         switch(dUnits){
             case "tsp":
+                numerator += (oldValue * denominator);
                 if(Objects.equals(units, "tsp")) {
-                    break;
+                    Log.d(TAG, "showData: before tsp tsp\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator((input.getWhole() * input.getDenominator()) + input.getNumerator());
                 }
                 if(Objects.equals(units, "tbs")) {
-                    den *= 3;
-                    num *= 3;
+                    Log.d(TAG, "showData: before tsp tbs\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    Log.d(TAG, "showData: whole " + input.getWhole() + "\n");
+                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
                 }
                 if(Objects.equals(units, "cup")) {
-                    den *= 48;
-                    num *= 48;
+                    Log.d(TAG, "showData: before tsp cup\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
                 }
-                den = gcd(denominator, den);
-                num += numerator;
+                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
+                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
                 units = "tsp";
+                Log.d(TAG, "showData: before break 1\n");
+                Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                Log.d(TAG, "showData: numerator " + numerator + "\n");
+                Log.d(TAG, "showData: denominator " + denominator + "\n");
                 break;
             case "tbs":
-                numerator *= 3;
+                numerator = ((oldValue * 3 * denominator) + (numerator * 3));
                 if(Objects.equals(units, "tsp")) {
-                   break;
+                    Log.d(TAG, "showData: before tbs tsp\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
                 }
                 if(Objects.equals(units, "tbs")){
-                    num *= 3;
+                    Log.d(TAG, "showData: before tbs tbs\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
                 }
                 if(Objects.equals(units, "cup")){
-                    num *= 48;
+                    Log.d(TAG, "showData: before tbs cup\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
                 }
-                den = gcd(denominator, den);
-                num += numerator;
+                Log.d(TAG, "showData: before break 2\n");
+                Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                Log.d(TAG, "showData: numerator " + numerator + "\n");
+                Log.d(TAG, "showData: denominator " + denominator + "\n");
+                Log.d(TAG, "showData: gcd " + gcd(denominator, input.getDenominator()) + "\n");
+                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
+                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
                 units = "tsp";
                 break;
             case "cup":
-                numerator *= 48;
+                numerator = ((oldValue * 48 * denominator) + (numerator * 48));
                 if(Objects.equals(units, "tsp")){
-                    break;
+                    Log.d(TAG, "showData: before cup tsp\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
                 }
                 if(Objects.equals(units, "tbs")){
-                   num *= 3;
+                    Log.d(TAG, "showData: before cup tbs\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
                 }
                 if(Objects.equals(units, "cup")){
-                    num *= 48;
+                    Log.d(TAG, "showData: before cup cup\n");
+                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                    Log.d(TAG, "showData: numerator " + numerator + "\n");
+                    Log.d(TAG, "showData: denominator " + denominator + "\n");
+                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
                 }
-                den = gcd(denominator, den);
-                num += numerator;
+                Log.d(TAG, "showData: before break 3\n");
+                Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+                Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+                Log.d(TAG, "showData: numerator " + numerator + "\n");
+                Log.d(TAG, "showData: denominator " + denominator + "\n");
+                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
+                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
                 units = "tsp";
                 break;
             default:
-                nValue = oldValue + 1;
+                input.setWhole(oldValue + 1);
                 break;
         }
-        int tempV;
-        int tempN;
-        int tempD;
+        if(input.getDenominator() == 0)
+            input.setDenominator(1);
         Log.d(TAG, "showData: before convert nValue: " + nValue + "\n");
-        if(((num / 48) > 0) && (Objects.equals(units, "tsp"))) {
-            Toast.makeText(getApplicationContext(), "changing to cups",
-                    Toast.LENGTH_LONG).show();
+        Log.d(TAG, "showData: before math\n");
+        Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
+        Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
+        Log.d(TAG, "showData: numerator " + numerator + "\n");
+        Log.d(TAG, "showData: denominator " + denominator + "\n");
+        if(((input.getNumerator() / input.getDenominator()) >= 48) && (Objects.equals(units, "tsp"))) {
+            Log.d(TAG, "showData: cups \n");
             units = "cup";
-            nValue = (num / (den * 48));
-            Log.d(TAG, "showData: after convert nValue: " + nValue + "\n");
-            num = (num % 48);
-            den = 48;
-            if (num != 0) {
-                if ((num / 3) > 0) {
+            input.setDenominator(input.getDenominator() * 48);
+            input.setWhole((input.getNumerator() / input.getDenominator()));
+            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
+            int common = gcd(input.getNumerator(), input.getDenominator());
+            input.setNumerator(input.getNumerator()/common);
+            input.setDenominator(input.getDenominator()/common);
+            if (input.getNumerator() != 0) {
+                if ((input.getNumerator() / ((input.getDenominator() * common) / 16)) >= 3) {
                     Log.d(TAG, "showData: needs to be tbs: " + num + "\n");
-                    tempV = (num / (den / 3));
-                    tempN = (num % 3);
-                    tempD = 3;
+                    int tempD = input.getDenominator() * 3;
+                    int tempV = ((input.getNumerator() / tempD));
+                    int tempN = (input.getNumerator() - (input.getWhole() * tempD));
+                    common = gcd(input.getNumerator(), tempD);
+                    tempN = (tempN/common);
+                    tempD = (tempD/common);
                     if (tempN != 0)
-                        display = (nValue + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
+                        display = (input.getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
                     else
-                        display = (tempV + " tbs" + tempN + " tsp");
+                        display = (input.getWhole() + " tbs" + tempN + " tsp");
                 }
                 else
-                    display = (nValue + " " + num + "/" + den + " " + units);
+                    display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
             }
             else
-                display = (nValue + " " + units);
-            wholeNum = true;
-
-        }else if (((num / 3) > 0) && (Objects.equals(units, "tsp"))) {
-            Toast.makeText(getApplicationContext(), "changing to tbs",
-                    Toast.LENGTH_LONG).show();
-            nValue = (num /(den * 3));
-            num = (num % 3);
-            den = 3;
-            if (num != 0)
-                display = (nValue + " " + num + "/" + den + " tbs");
+                display = (input.getWhole() + " " + units);
+        }else if (((input.getNumerator() / input.getDenominator()) >= 3) && (Objects.equals(units, "tsp"))) {
+            Log.d(TAG, "showData: tbs \n");
+            units = "tbs";
+            input.setDenominator(input.getDenominator() * 3);
+            input.setWhole(input.getNumerator() / input.getDenominator());
+            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
+            int common = gcd(input.getNumerator(), input.getDenominator());
+            input.setNumerator(input.getNumerator()/common);
+            input.setDenominator(input.getDenominator()/common);
+            if (input.getNumerator() != 0)
+                display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
             else
-                display = (nValue + " tbs");
-            wholeNum = true;
+                display = (input.getWhole() + " tbs");
         }else{
-            if (num != 0)
-                display = (num + "/" + den + " tsp");
-            else
-                myRef.child("users").child(userID).child("ShoppingList").child(item).removeValue();
+            Log.d(TAG, "showData: tsp \n");
+            input.setWhole(input.getNumerator() / input.getDenominator());
+            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
+            int common = gcd(input.getNumerator(), input.getDenominator());
+            input.setNumerator(input.getNumerator()/common);
+            input.setDenominator(input.getDenominator()/common);
+            if (input.getNumerator() != 0) {
+                if (input.getWhole() != 0)
+                    display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tsp");
+                else
+                    display = (input.getNumerator() + "/" + input.getDenominator() + " tsp");
+            }else
+                display = (input.getWhole() + "tsp");
         }
-        if(num == 0) {
-            fraction = false;
+        if(input.getNumerator() == 0) {
             den = 1;
             Log.d(TAG, "showData: n = 0 nValue: " + nValue + "\n");
         }
@@ -494,7 +562,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
                     Ingredient uInfo = ds.getValue(Ingredient.class);
-                    // Ingredient ingredient = new Ingredient(uInfo.getIngredient(), uInfo.getValue(), uInfo.getUnits());
                     assert uInfo != null;
                     Log.d(TAG, "showData: name: " + uInfo.getIngredient());
                     Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getDisplay());
