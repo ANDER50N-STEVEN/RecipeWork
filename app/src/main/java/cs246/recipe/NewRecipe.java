@@ -1,7 +1,6 @@
 package cs246.recipe;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -36,9 +34,6 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NewRecipe extends AppCompatActivity {
 
     private ListView ingredientList;
@@ -49,6 +44,7 @@ public class NewRecipe extends AppCompatActivity {
     private FloatingActionButton mSaveButton;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
+    private DatabaseReference mDatabaseRef2;
     private static final int GALLERY_INTENT = 2;
     private ProgressDialog mProgressDialog;
     private Uri mImageUri;
@@ -98,6 +94,7 @@ public class NewRecipe extends AppCompatActivity {
         //declare StorageReference for uploading photo
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef2 = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
         final FirebaseUser user = mAuth.getCurrentUser();
@@ -161,11 +158,11 @@ public class NewRecipe extends AppCompatActivity {
                 RecipeObject newRecipe = new RecipeObject(mAdapter.getIngredientList(), string);
                 mDatabaseRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
 
-//                if (mUploadTask != null && mUploadTask.isInProgress()) {
-//                    Toast.makeText(NewRecipe.this, "Upload in progress", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    uploadFile();
-//                }
+                if (mUploadTask != null && mUploadTask.isInProgress()) {
+                    Toast.makeText(NewRecipe.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadFile();
+                }
 
                 recipeName.setText("");
                 instructionsText.setText("");
@@ -264,17 +261,6 @@ public class NewRecipe extends AppCompatActivity {
     }
 
     /**
-     * Get the extension of the Image file that is uploaded
-     * @param uri the data of the user in the storage
-     * @return the extension of the image file
-     */
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
-    /**
      * Uploads Images from gallery of the phone
      * @param requestCode A request code you passed to startActivityForResult()
      * @param resultCode This is either RESULT_OK for successful or RESULT_CANCELED for operation failed
@@ -286,7 +272,7 @@ public class NewRecipe extends AppCompatActivity {
         if(requestCode == GALLERY_INTENT && resultCode == RESULT_OK  && data != null && data.getData() != null)
         {
             mImageUri = data.getData();
-            Picasso.get().load(mImageUri).into(mImageView);
+            Picasso.with(this).load(mImageUri).into(mImageView);
         }
     }
 
@@ -312,6 +298,14 @@ public class NewRecipe extends AppCompatActivity {
 
                             Toast.makeText(NewRecipe.this, "Upload successful", Toast.LENGTH_LONG).show();
                             mProgressDialog.dismiss();
+
+                            String name = taskSnapshot.getMetadata().getName();
+                            String url = taskSnapshot.getDownloadUrl().toString();
+
+                            Log.e(TAG, "Uri: " + url);
+                            Log.e(TAG, "Name: " + name);
+
+                            writeNewImageInfoToDB(name, url);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -331,6 +325,18 @@ public class NewRecipe extends AppCompatActivity {
         else {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Stores image name and url to the database
+     * @param name name of the image
+     * @param url url of the image
+     */
+    private void writeNewImageInfoToDB(String name, String url) {
+        UploadImageObject info = new UploadImageObject(name, url);
+
+        //String key = mDatabaseRef2.push().getKey();
+        mDatabaseRef2.child("users").child(userID).child("Photos").child(name).setValue(info);
     }
 
 }
