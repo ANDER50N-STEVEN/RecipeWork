@@ -29,7 +29,7 @@ public class MixedFraction {
     MixedFraction(Integer whole) {
         setWhole(whole);
         setNumerator(0);
-        setDenominator(0);
+        setDenominator(1);
         createDisplay();
     }
 
@@ -41,7 +41,7 @@ public class MixedFraction {
     MixedFraction() {
         setWhole(0);
         setNumerator(0);
-        setDenominator(0);
+        setDenominator(1);
         createDisplay();
     }
 

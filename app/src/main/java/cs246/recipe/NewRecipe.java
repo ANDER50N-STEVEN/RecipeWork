@@ -106,8 +106,8 @@ public class NewRecipe extends AppCompatActivity {
         mProgressDialog = new ProgressDialog(this);
 
         spinner = findViewById(R.id.spinner);
-        final String[] measurement = new String[]{"", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        final String[] measurements = new String[]{"", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, measurements);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

@@ -11,6 +11,8 @@ public class Ingredient {
     private String display;
     private MixedFraction measurement;
 
+    public Ingredient() {}
+
     public Ingredient(String ingredient, String units, MixedFraction measurement){
         setIngredient(ingredient);
         setUnits(units);
