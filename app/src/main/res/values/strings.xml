@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Recipe</string>
+    <string name="app_name">BEET IT</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -19,7 +19,7 @@
     <string name="r_made">Made</string>
     <string name="newInstruction_editText_hint">Add instructions</string>
     <string name="newIngredient_editText_hint">Add ingredient</string>
-    <string name="welcome_login_page">RECIPE</string>
+    <string name="welcome_login_page">BEET IT</string>
     <string name="email_input_field">Email</string>
     <string name="password_input_field">Password</string>
     <string name="login_button">Sign In</string>
