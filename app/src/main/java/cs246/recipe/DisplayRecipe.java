@@ -17,6 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
@@ -129,5 +132,66 @@ public class DisplayRecipe extends AppCompatActivity {
         finish();
     }
 
+    public void R_make(View view) {
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                List<Ingredient> ingredients = new ArrayList<>();
+//                for(DataSnapshot ds: dataSnapshot.child("users").child(userID).child("Pantry").getChildren()) {
+////                    String ingredient = "";
+////                    String units = "";
+////                    String display = "";
+////                    MixedFraction measurement = new MixedFraction();
+////                    if (ds.hasChild("ingredient")) {
+////                        ingredient = String.valueOf(ds.child("ingredient").getValue());
+////                    }
+////                    if (ds.hasChild("units")) {
+////                        units = String.valueOf(ds.child("units").getValue());
+////                    }
+////                    if (ds.hasChild("display")) {
+////                        display = String.valueOf(ds.child("display").getValue());
+////                    }
+////                    if (ds.hasChild("measurement")) {
+////                        int whole = 0;
+////                        int numerator = 0;
+////                        int denominator = 0;
+////                        if (ds.child("measurement").hasChild("whole")) {
+////                            whole = Integer.valueOf(String.valueOf(ds.child("whole").getValue()));
+////                        }
+////                        if (ds.child("measurement").hasChild("numerator")) {
+////                            numerator = Integer.valueOf(String.valueOf(ds.child("numerator").getValue()));
+////                        }
+////                        if (ds.child("measurement").hasChild("denominator")) {
+////                            denominator = Integer.valueOf(String.valueOf(ds.child("denominator").getValue()));
+////                        }
+////                        measurement = new MixedFraction(whole, numerator, denominator);
+////                    }
+////
+////                    Ingredient uInfo = new Ingredient(ingredient, units, measurement, display);
+////                    assert uInfo != null;
+////                    ingredients.add(uInfo);
+//                }
+//                for (Ingredient in : adapter.getIngredientList()) {
+//                    ingredients.add(in);
+//                }
+//                for (Ingredient in : ingredients) {
+//                    reference.child("users").child(userID).child("Pantry").child(in.getIngredient()).setValue(in);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+        List<Ingredient> ingredients = new ArrayList<>();
+
+        for (Ingredient in : adapter.getIngredientList()) {
+            ingredients.add(in);
+        }
+        for (Ingredient in : ingredients) {
+            reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
+        }
+    }
 }
 
