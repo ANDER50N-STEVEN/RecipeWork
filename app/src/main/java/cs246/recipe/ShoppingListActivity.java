@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -56,11 +55,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
     private String units;
     private String userID;
     private boolean load;
-    private boolean wholeNum;
-    private boolean fraction;
-    private int num;
-    private int den;
-    private int nValue;
     private String display;
     private MixedFraction input;
 
@@ -85,10 +79,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         final FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
         load = true;
-        wholeNum = false;
-        fraction = false;
-
-
 
         mItemEdit = findViewById(R.id.item_editText);
         mValueEdit = findViewById(R.id.value_editText);
@@ -120,7 +110,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 // ...
             }
         };
-
 
         // Read from the database
 
@@ -154,7 +143,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
                 Log.d(TAG, "Ingredient: " + item + "  Value: " + value + "\n");
 
-
                 //handle the exception if the EditText fields are null
                 if (!item.equals("") && !value.equals("")) {
                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -164,15 +152,15 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                                 if (!snapshot.child("users").child(userID).child("ShoppingList").hasChild(item)) {
 
                                     if(input.getWhole() == 0){
-                                            display = (input.getNumerator() + "/" + input.getDenominator() + " " + units);
+                                            input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " " + units);
                                     }else{
                                         if (input.getNumerator() != 0) {
-                                            display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
+                                            input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
                                         }else
-                                            display = (input.getWhole() + " " + units);
+                                            input.setDisplay(input.getWhole() + " " + units);
                                     }
-                                    Ingredient ingredient = new Ingredient(item, units, input, display);
-                                    shoppingList.add(display + " - " + item);
+                                    Ingredient ingredient = new Ingredient(item, units, input, input.getDisplay());
+                                    shoppingList.add(input.getDisplay() + " - " + item);
                                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                                     mShoppingListView.setAdapter(mAdapter);
                                     mAdapter.notifyDataSetChanged();
@@ -180,19 +168,21 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                                     mValueEdit.setText("");
                                     toastMessage("New Information has been saved.");
                                 } else {
+//                                    MixedFraction old = snapshot.child("users").child(userID).child("ShoppingList").child(item).getValue(MixedFraction.class);
+//                                    Convert convert = new Convert(item, old, snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString(),
+//                                            input, units, display);
                                     convertData(Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("numerator").getValue().toString()),
                                             Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("denominator").getValue().toString()),
                                             Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("whole").getValue().toString()),
-                                            snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString(),
-                                            item);
-
-                                   // MixedFraction measurement = new MixedFraction(nValue, num, den);
-                                    Ingredient ingredient = new Ingredient(item, units, input, display);
+                                            snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString());
+//                                    Log.d(TAG, "TTTTTTTTTTTTTEEEEEEEEEEEEEESSSSSSSSSSSSSTTTTTTTTTTTTT\n");
+//                                    convert.convertData();
+//                                    Ingredient ingredient = new Ingredient(convert.getIng(), convert.getNewUni(), convert.getNewFrac(), convert.getDisplay());
+                                    Ingredient ingredient = new Ingredient(item, units, input);
                                     myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
                                     mItemEdit.setText("");
                                     mValueEdit.setText("");
                                     shoppingList.clear();
-                                   // mAdapter.notifyDataSetChanged();
                                     load = true;
                                 }
                             }
@@ -217,8 +207,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 myRef.child("users").child(userID).child("ShoppingList").removeValue();
                 Toast.makeText(getApplicationContext(), "Your shopping cart is now empty!",
                         Toast.LENGTH_LONG).show();
-                shoppingList = null;
-                mShoppingListView.setAdapter(null);
+                shoppingList.clear();
+//                mShoppingListView.setAdapter(null);
                 mAdapter.notifyDataSetChanged();
 
             }
@@ -300,17 +290,15 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()){
             Ingredient uInfo = ds.getValue(Ingredient.class);
 
-
             //display all the information
             assert uInfo != null;
             Log.d(TAG, "showData: database ingredient: " + uInfo.getIngredient());
             Log.d(TAG, "showData: database value: " + uInfo.getMeasurement().getDisplay());
             Log.d(TAG, "showData: database units: " + uInfo.getUnits());
             Log.d(TAG, "showData: trial 1: " + uInfo.getMeasurement().getDisplay());
-            shoppingList.add(uInfo.getDisplay() + " - " + uInfo.getIngredient());
+            shoppingList.add(uInfo.getMeasurement().getDisplay() + " - " + uInfo.getIngredient());
             ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,shoppingList);
             mShoppingListView.setAdapter(adapter);
-
         }
     }
 
@@ -322,107 +310,44 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
        return gcd((b%a), a);
     }
 
-    private void convertData(int numerator, int denominator, int oldValue, String dUnits, String item){
-//        Log.d(TAG, "showData: nValue: " + nValue + "\n");
-//        Log.d(TAG, "showData: nValue: " + oldValue + "\n");
+    private void convertData(int numerator, int denominator, int oldValue, String dUnits){
         if(denominator == 0)
             denominator = 1;
         if(input.getDenominator() == 0)
             input.setDenominator(1);
         int multiplier = 1;
         int multiplier2 = 1;
-//        if(wholeNum)
-//            num = (nValue * den);
-//        Log.d(TAG, "showData: num: " + num + "\n");
-//        Log.d(TAG, "showData: den: " + den + "\n");
-//        if(oldValue != 0)
-//            numerator += (oldValue * denominator);
         if(input.getDenominator() != denominator){
             multiplier2 = (input.getDenominator() / gcd(denominator, input.getDenominator()));
             multiplier = (denominator / gcd(denominator, input.getDenominator()));
-//            den = gcd(denominator, den);
         }
-//        num *= multiplier;
-//        numerator *= multiplier2;
-//        wholeNum = false;
-//        fraction = true;
-        Log.d(TAG, "showData: before switches\n");
-        Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-        Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-        Log.d(TAG, "showData: numerator " + numerator + "\n");
-        Log.d(TAG, "showData: denominator " + denominator + "\n");
-        Log.d(TAG, "showData: multiplier1 " + multiplier + "\n");
-        Log.d(TAG, "showData: multiplier2 " + multiplier2 + "\n");
-
         switch(dUnits){
             case "tsp":
                 numerator += (oldValue * denominator);
                 if(Objects.equals(units, "tsp")) {
-                    Log.d(TAG, "showData: before tsp tsp\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator((input.getWhole() * input.getDenominator()) + input.getNumerator());
                 }
                 if(Objects.equals(units, "tbs")) {
-                    Log.d(TAG, "showData: before tsp tbs\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
-                    Log.d(TAG, "showData: whole " + input.getWhole() + "\n");
                     input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
                 }
                 if(Objects.equals(units, "cup")) {
-                    Log.d(TAG, "showData: before tsp cup\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
                 }
                 input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
                 input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
                 units = "tsp";
-                Log.d(TAG, "showData: before break 1\n");
-                Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                Log.d(TAG, "showData: numerator " + numerator + "\n");
-                Log.d(TAG, "showData: denominator " + denominator + "\n");
                 break;
             case "tbs":
                 numerator = ((oldValue * 3 * denominator) + (numerator * 3));
                 if(Objects.equals(units, "tsp")) {
-                    Log.d(TAG, "showData: before tbs tsp\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
                 }
                 if(Objects.equals(units, "tbs")){
-                    Log.d(TAG, "showData: before tbs tbs\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
                 }
                 if(Objects.equals(units, "cup")){
-                    Log.d(TAG, "showData: before tbs cup\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
                 }
-                Log.d(TAG, "showData: before break 2\n");
-                Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                Log.d(TAG, "showData: numerator " + numerator + "\n");
-                Log.d(TAG, "showData: denominator " + denominator + "\n");
-                Log.d(TAG, "showData: gcd " + gcd(denominator, input.getDenominator()) + "\n");
                 input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
                 input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
                 units = "tsp";
@@ -430,34 +355,14 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             case "cup":
                 numerator = ((oldValue * 48 * denominator) + (numerator * 48));
                 if(Objects.equals(units, "tsp")){
-                    Log.d(TAG, "showData: before cup tsp\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
                 }
                 if(Objects.equals(units, "tbs")){
-                    Log.d(TAG, "showData: before cup tbs\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
                 }
                 if(Objects.equals(units, "cup")){
-                    Log.d(TAG, "showData: before cup cup\n");
-                    Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                    Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                    Log.d(TAG, "showData: numerator " + numerator + "\n");
-                    Log.d(TAG, "showData: denominator " + denominator + "\n");
                     input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
                 }
-                Log.d(TAG, "showData: before break 3\n");
-                Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-                Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-                Log.d(TAG, "showData: numerator " + numerator + "\n");
-                Log.d(TAG, "showData: denominator " + denominator + "\n");
                 input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
                 input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
                 units = "tsp";
@@ -468,14 +373,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         }
         if(input.getDenominator() == 0)
             input.setDenominator(1);
-        Log.d(TAG, "showData: before convert nValue: " + nValue + "\n");
-        Log.d(TAG, "showData: before math\n");
-        Log.d(TAG, "showData: get num " + input.getNumerator() + "\n");
-        Log.d(TAG, "showData: get den " + input.getDenominator() + "\n");
-        Log.d(TAG, "showData: numerator " + numerator + "\n");
-        Log.d(TAG, "showData: denominator " + denominator + "\n");
         if(((input.getNumerator() / input.getDenominator()) >= 48) && (Objects.equals(units, "tsp"))) {
-            Log.d(TAG, "showData: cups \n");
             units = "cup";
             input.setDenominator(input.getDenominator() * 48);
             input.setWhole((input.getNumerator() / input.getDenominator()));
@@ -485,7 +383,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             input.setDenominator(input.getDenominator()/common);
             if (input.getNumerator() != 0) {
                 if ((input.getNumerator() / ((input.getDenominator() * common) / 16)) >= 3) {
-                    Log.d(TAG, "showData: needs to be tbs: " + num + "\n");
                     int tempD = input.getDenominator() * 3;
                     int tempV = ((input.getNumerator() / tempD));
                     int tempN = (input.getNumerator() - (input.getWhole() * tempD));
@@ -493,15 +390,15 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                     tempN = (tempN/common);
                     tempD = (tempD/common);
                     if (tempN != 0)
-                        display = (input.getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
+                        input.setDisplay(input.getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
                     else
-                        display = (input.getWhole() + " tbs" + tempN + " tsp");
+                        input.setDisplay(input.getWhole() + " tbs" + tempN + " tsp");
                 }
                 else
-                    display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
+                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
             }
             else
-                display = (input.getWhole() + " " + units);
+                input.setDisplay(input.getWhole() + " " + units);
         }else if (((input.getNumerator() / input.getDenominator()) >= 3) && (Objects.equals(units, "tsp"))) {
             Log.d(TAG, "showData: tbs \n");
             units = "tbs";
@@ -512,9 +409,9 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             input.setNumerator(input.getNumerator()/common);
             input.setDenominator(input.getDenominator()/common);
             if (input.getNumerator() != 0)
-                display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
+                input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
             else
-                display = (input.getWhole() + " tbs");
+                input.setDisplay(input.getWhole() + " tbs");
         }else{
             Log.d(TAG, "showData: tsp \n");
             input.setWhole(input.getNumerator() / input.getDenominator());
@@ -524,15 +421,14 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             input.setDenominator(input.getDenominator()/common);
             if (input.getNumerator() != 0) {
                 if (input.getWhole() != 0)
-                    display = (input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tsp");
+                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tsp");
                 else
-                    display = (input.getNumerator() + "/" + input.getDenominator() + " tsp");
+                    input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " tsp");
             }else
-                display = (input.getWhole() + "tsp");
+                input.setDisplay(input.getWhole() + "tsp");
         }
         if(input.getNumerator() == 0) {
-            den = 1;
-            Log.d(TAG, "showData: n = 0 nValue: " + nValue + "\n");
+            input.setDenominator(1);
         }
     }
 
@@ -558,26 +454,44 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
     public void copyRecord() {
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
                     Ingredient uInfo = ds.getValue(Ingredient.class);
                     assert uInfo != null;
                     Log.d(TAG, "showData: name: " + uInfo.getIngredient());
-                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getDisplay());
+//                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getinput.setDisplay(());
                     Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
-                    myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(uInfo);
+                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getDenominator());
+                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getNumerator());
+                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getWhole());
+                    if (!dataSnapshot.child("users").child(userID).child("Pantry").hasChild(uInfo.getIngredient())) {
+                        myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(uInfo);
+                    } else {
+                            Ingredient dInfo = dataSnapshot.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).getValue(Ingredient.class);
+                            units = dInfo.getUnits();
+                            input = dInfo.getMeasurement();
+                            display = dInfo.getDisplay();
+                            Log.d(TAG, "showData: CRRRRRRRRRRRAAAAAAAAAZZZZZZZZZYYYYYYYYYY");
+                            convertData(uInfo.getMeasurement().getNumerator(),
+                                    uInfo.getMeasurement().getDenominator(),
+                                    uInfo.getMeasurement().getWhole(),
+                                    uInfo.getUnits());
+                            Log.d(TAG, "showData: CRRRRRRRRRRRAAAAAAAAAZZZZZZZZZYYYYYYYYYY2");
+                            Ingredient newIngredient = new Ingredient(uInfo.getIngredient(), units, input);
+                            myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(newIngredient);
+                    }
+                    shoppingList.clear();
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
 
-    /**
+            /**
      * customizable toast
      * @param message
      */

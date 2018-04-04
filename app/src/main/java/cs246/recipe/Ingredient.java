@@ -23,7 +23,7 @@ public class Ingredient {
         setIngredient(ingredient);
         setUnits(units);
         setMeasurement(measurement);
-        setDisplay(display);
+        getMeasurement().setDisplay(display);
     }
 
     public void setDisplay(String display) {
