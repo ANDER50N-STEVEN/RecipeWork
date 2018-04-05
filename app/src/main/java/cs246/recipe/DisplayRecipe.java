@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,6 +25,7 @@ public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
 
+    List<Ingredient> ingredients;
     IngredientArrayAdapter adapter;
     FirebaseUser user;
     String userID;
@@ -45,7 +47,8 @@ public class DisplayRecipe extends AppCompatActivity {
         userID = user.getUid();
 
         Intent intent = getIntent();
-        recipeName = intent.getStringExtra("recipeName");
+//        recipeName = intent.getStringExtra("recipeName");
+        recipeName = "Crepes";
         recipeNameEdit.setText(recipeName);
 
         adapter = new IngredientArrayAdapter(getApplicationContext());
@@ -53,6 +56,7 @@ public class DisplayRecipe extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         reference = database.getReference();
+        ingredients = new ArrayList<>();
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -115,6 +119,55 @@ public class DisplayRecipe extends AppCompatActivity {
                                     }
                                 }
                             }
+                        }
+                    }
+                    if (dataSnapshot.child("users").child(userID).hasChild("ShoppingList")) {
+                        Log.d("dataCapture", "Has child ShoppingList");
+                        for(DataSnapshot ds: dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
+                            String ingredient = "";
+                            String units = "";
+                            String display = "";
+                            MixedFraction measurement = new MixedFraction();
+                            if (ds.hasChild("ingredient")) {
+                                ingredient = String.valueOf(ds.child("ingredient").getValue());
+                            }
+                            if (ds.hasChild("units")) {
+                                units = String.valueOf(ds.child("units").getValue());
+                            }
+                            if (ds.hasChild("display")) {
+                                display = String.valueOf(ds.child("display").getValue());
+                            }
+                            if (ds.hasChild("measurement")) {
+                                int whole = 0;
+                                int numerator = 0;
+                                int denominator = 0;
+                                if (ds.child("measurement").hasChild("whole")) {
+                                    try {
+                                        whole = Integer.valueOf(String.valueOf(ds.child("whole").getValue()));
+                                    } catch (Exception e) {
+                                        whole = 0;
+                                    }
+                                }
+                                if (ds.child("measurement").hasChild("numerator")) {
+                                    try {
+                                        numerator = Integer.valueOf(String.valueOf(ds.child("numerator").getValue()));
+                                    } catch (Exception e) {
+                                        whole = 0;
+                                    }
+                                }
+                                if (ds.child("measurement").hasChild("denominator")) {
+                                    try {
+                                        denominator = Integer.valueOf(String.valueOf(ds.child("denominator").getValue()));
+                                    } catch (Exception e) {
+                                        whole = 0;
+                                    }
+                                }
+                                measurement = new MixedFraction(whole, numerator, denominator);
+                            }
+
+                            Ingredient uInfo = new Ingredient(ingredient, units, measurement, display);
+                            assert uInfo != null;
+                            ingredients.add(uInfo);
                         }
                     }
                 }
@@ -192,6 +245,8 @@ public class DisplayRecipe extends AppCompatActivity {
         for (Ingredient in : ingredients) {
             reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
         }
+
+        Toast.makeText(this, "Ingredients Added to Shopping List", Toast.LENGTH_SHORT).show();
     }
 }
 
