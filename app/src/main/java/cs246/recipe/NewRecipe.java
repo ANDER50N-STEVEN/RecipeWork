@@ -171,7 +171,7 @@ public class NewRecipe extends AppCompatActivity {
                 editor.clear();
                 editor.commit();
 
-                finish();
+                //finish();
             }
         });
 
@@ -306,6 +306,7 @@ public class NewRecipe extends AppCompatActivity {
                             Log.e(TAG, "Name: " + name);
 
                             writeNewImageInfoToDB(name, url);
+                            finish();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -321,6 +322,7 @@ public class NewRecipe extends AppCompatActivity {
                             mProgressDialog.setProgress((int) progress);
                         }
                     });
+
         }
         else {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
