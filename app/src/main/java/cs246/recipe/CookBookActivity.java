@@ -89,6 +89,7 @@ public class CookBookActivity extends AppCompatActivity {
             @Override public void onClick(View v)
             {
                 Intent intent = new Intent(CookBookActivity.this, NewRecipe.class);
+                mUploads.clear();
                 startActivity(intent);
             }
         });
