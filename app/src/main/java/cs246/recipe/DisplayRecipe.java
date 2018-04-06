@@ -47,8 +47,7 @@ public class DisplayRecipe extends AppCompatActivity {
         userID = user.getUid();
 
         Intent intent = getIntent();
-//        recipeName = intent.getStringExtra("recipeName");
-        recipeName = "Crepes";
+        recipeName = intent.getStringExtra("recipeName");
         recipeNameEdit.setText(recipeName);
 
         adapter = new IngredientArrayAdapter(getApplicationContext());
