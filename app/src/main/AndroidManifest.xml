@@ -11,7 +11,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
-        android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -26,7 +26,6 @@
         <activity android:name=".PantryActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".NewRecipe" />
-        <activity android:name=".Welcome"/>
         <activity android:name=".SignUp"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ForgetPassword"

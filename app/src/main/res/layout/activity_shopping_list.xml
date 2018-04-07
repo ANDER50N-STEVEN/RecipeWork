@@ -1,84 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/sweetCream"
+    android:clipToPadding="true"
+    android:fillViewport="true"
     tools:context="cs246.recipe.ShoppingListActivity">
 
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/item_editText"
-        android:layout_width="156dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
-        android:layout_weight="1"
-        android:hint="@string/item_editText_hint"
-        app:layout_constraintBottom_toTopOf="@+id/add_button"
-        app:layout_constraintStart_toStartOf="parent" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolBarView"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize">
 
-    <Button
-        android:id="@+id/add_button"
-        android:layout_width="231dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="@string/add_button_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="parent" />
+        </android.support.v7.widget.Toolbar>
 
 
-    <Button
-        android:id="@+id/checkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/checkout_button_text"
-        app:layout_constraintBottom_toTopOf="@+id/shoppingList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.97"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/item_editText"
+            android:layout_width="fill_parent"
+            android:layout_height="44dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/general_input_field"
+            android:hint="@string/item_editText_hint"
+            android:singleLine="false"
+            android:ems="10"
+            android:drawableStart="@drawable/ic_create_black_24dp"
+            android:drawablePadding="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolBarView" />
 
-    <EditText
-        android:id="@+id/value_editText"
-        android:layout_width="54dp"
-        android:layout_height="41dp"
-        android:layout_marginStart="24dp"
-        android:ems="10"
-        android:hint="#"
-        android:inputType="date"
-        app:layout_constraintBottom_toTopOf="@+id/add_button"
-        app:layout_constraintStart_toEndOf="@+id/item_editText" />
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="100dp"
+            android:layout_height="43dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/general_button_dark"
+            android:padding="5dp"
+            android:text="@string/add_button_text"
+            android:textColor="@color/blueAqua"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.619"
+            app:layout_constraintStart_toEndOf="@+id/spinner1"
+            app:layout_constraintTop_toBottomOf="@+id/item_editText" />
 
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="99dp"
-        android:layout_height="44dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        android:spinnerMode="dropdown"
-        app:layout_constraintBottom_toTopOf="@+id/add_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/value_editText" />
 
-    <com.baoyz.swipemenulistview.SwipeMenuListView
-        android:id="@+id/shoppingList"
-        android:layout_width="fill_parent"
-        android:layout_height="364dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/value_editText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        <Button
+            android:id="@+id/checkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/general_button_dark"
+            android:padding="10dp"
+            android:text="@string/checkout_button_text"
+            android:textColor="@color/blueAqua"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+        <EditText
+            android:id="@+id/value_editText"
+            android:layout_width="100dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/general_input_field"
+            android:hint="@string/hash_tag"
+            android:drawableStart="@drawable/ic_iso_black_24dp"
+            android:drawablePadding="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:inputType="date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_editText" />
+
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="100dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:fadingEdgeLength="@dimen/fab_margin"
+            android:gravity="center"
+            android:spinnerMode="dropdown"
+            android:textColorHint="#CFD8DC"
+            app:layout_constraintStart_toEndOf="@+id/value_editText"
+            app:layout_constraintTop_toBottomOf="@+id/item_editText" />
+
+
+        <com.baoyz.swipemenulistview.SwipeMenuListView
+            android:id="@+id/shoppingList"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/white"
+            android:divider="@color/sweetCream"
+            android:dividerHeight="6dp"
+            app:layout_constraintBottom_toTopOf="@+id/checkout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner1"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

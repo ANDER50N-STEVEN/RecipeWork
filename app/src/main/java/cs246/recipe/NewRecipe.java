@@ -8,14 +8,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -32,6 +34,15 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.picasso.Picasso;
 
 public class NewRecipe extends AppCompatActivity {
@@ -41,7 +52,7 @@ public class NewRecipe extends AppCompatActivity {
     private EditText instructionsText, mItemEdit, mAmount, recipeName;
     private String units;
     private StorageReference mStorage;
-    private FloatingActionButton mSaveButton;
+    private Button mSaveButton;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
     private DatabaseReference mDatabaseRef2;
@@ -68,6 +79,66 @@ public class NewRecipe extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
+
+        Toolbar mToolBar = findViewById(R.id.toolBarView);
+        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
+
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.header)
+                .addProfiles(
+                        new ProfileDrawerItem().withName("Mike Penz").withEmail("").withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                )
+                .build();
+
+        //if you want to update the items at a later time it is recommended to keep it in a variable
+        SecondaryDrawerItem item1 = new SecondaryDrawerItem().withIdentifier(1).withName(R.string.title_home).withIcon(R.drawable.ic_home_black_24dp);
+        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.shopping_cart).withIcon(R.drawable.ic_shopping_cart_black_24dp);
+        SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withName(R.string.pantry_button).withIcon(R.drawable.ic_shopping_basket_black_24dp);
+        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
+        SecondaryDrawerItem item6 = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
+
+        //create the drawer and remember the `Drawer` result object
+        Drawer result = new DrawerBuilder()
+                .withActivity(this)
+                .withAccountHeader(headerResult)
+                .withToolbar(mToolBar)
+                .addDrawerItems(
+                        item1, item2, item3, new DividerDrawerItem(), item5, item6
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        switch(position)
+                        {
+                            case 1:
+                                Intent intent = new Intent(NewRecipe.this, CookBookActivity.class);
+                                startActivity(intent);
+                                break;
+                            case 2:
+                                intent = new Intent(NewRecipe.this, ShoppingListActivity.class);
+                                startActivity(intent);
+                                break;
+                            case 3:
+                                intent = new Intent(NewRecipe.this, PantryActivity.class);
+                                startActivity(intent);
+                                break;
+                            case 6:
+                                intent = new Intent(NewRecipe.this, NewRecipe.class);
+                                startActivity(intent);
+                                break;
+                            case 7:
+                                intent = new Intent(NewRecipe.this, NewRecipe.class);
+                                startActivity(intent);
+                                break;
+                        }
+                        return true;
+                    }
+                })
+                .build();
+        result.addStickyFooterItem(new PrimaryDrawerItem().withName("© Beet It").withIcon(R.drawable.beet_it_blue));
+
         num = 0;
         den = 1;
 
@@ -132,9 +203,9 @@ public class NewRecipe extends AppCompatActivity {
         mItemEdit = findViewById(R.id.addIngredientField); // ingredient input field
         mAmount = findViewById(R.id.amount); // amount of ingredient
         recipeName = findViewById(R.id.recipeName); // name of recipe
-        FloatingActionButton mAddButton = findViewById(R.id.add_ingredient_button); // + add image button
-        FloatingActionButton mCaptureButton = findViewById(R.id.captureButton); //capture button
-        FloatingActionButton mCancelButton = findViewById(R.id.cancelButton); //cancel button
+        ImageButton mAddButton = findViewById(R.id.add_ingredient_button); // + add image button
+        Button mCaptureButton = findViewById(R.id.captureButton); //capture button
+        Button mCancelButton = findViewById(R.id.cancelButton); //cancel button
         instructionsText = findViewById(R.id.addInstructionsField); // instructions input field
         mSaveButton = findViewById(R.id.saveButton); // save button
 

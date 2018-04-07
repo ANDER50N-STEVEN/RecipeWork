@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">BEET IT</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="title_activity_cook_book">CookBookActivity</string>
     <string name="add_button_text">Add</string>
-    <string name="item_editText_hint">Write a new item</string>
+    <string name="item_editText_hint">Add Item</string>
     <string name="checkout_button_text">Checkout</string>
     <string name="cookbook_button">Cookbook</string>
     <string name="pantry_button">Pantry</string>
@@ -13,7 +11,7 @@
     <string name="capture_button_text">Capture</string>
     <string name="save_button_text">Save</string>
     <string name="cancel_button_text">Cancel</string>
-    <string name="add_image_button_text">Add Image Button</string>
+    <string name="add_image_button_text">Add Image</string>
     <string name="r_go_back">Back</string>
     <string name="r_make">Make</string>
     <string name="r_made">Made</string>
@@ -30,7 +28,12 @@
     <string name="send_email">Send Request</string>
     <string name="account_recovery">Account Recovery</string>
     <string name="enter_name">Name</string>
-    <string name="add_image">Add new image</string>
-    <string name="add_number">3-3/4</string>
+    <string name="add_image">Add image</string>
+    <string name="add_number"><![CDATA[3–&#190;]]></string>
     <string name="recipe_name">Recipe Name</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="add_recipe">Add Recipe</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="about_us">About Us</string>
+    <string name="hash_tag">No.</string>
 </resources>
