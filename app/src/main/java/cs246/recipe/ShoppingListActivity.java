@@ -443,7 +443,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 units = "tsp";
                 break;
             default:
-                input.setWhole(oldValue + 1);
+                input.setWhole(input.getWhole() + oldValue);
+                units = " ";
                 break;
         }
         if(input.getDenominator() == 0)
@@ -487,7 +488,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
             else
                 input.setDisplay(input.getWhole() + " tbs");
-        }else{
+        }else if (Objects.equals(units, "tsp")){
             Log.d(TAG, "showData: tsp \n");
             input.setWhole(input.getNumerator() / input.getDenominator());
             input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
@@ -501,7 +502,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                     input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " tsp");
             }else
                 input.setDisplay(input.getWhole() + "tsp");
-        }
+        }else
+            input.setDisplay(input.getWhole() + "   -   ");
         if(input.getNumerator() == 0) {
             input.setDenominator(1);
         }

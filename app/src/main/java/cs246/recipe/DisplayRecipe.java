@@ -20,12 +20,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
 
-    List<Ingredient> ingredients;
+    ArrayList<Ingredient> ingredients;
     IngredientArrayAdapter adapter;
     FirebaseUser user;
     String userID;
@@ -34,6 +35,7 @@ public class DisplayRecipe extends AppCompatActivity {
     TextView recipeNameEdit;
     ListView ingredientsList;
     TextView instructionsField;
+    Ingredient input;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,9 +135,6 @@ public class DisplayRecipe extends AppCompatActivity {
                             if (ds.hasChild("units")) {
                                 units = String.valueOf(ds.child("units").getValue());
                             }
-                            if (ds.hasChild("display")) {
-                                display = String.valueOf(ds.child("display").getValue());
-                            }
                             if (ds.hasChild("measurement")) {
                                 int whole = 0;
                                 int numerator = 0;
@@ -164,7 +163,7 @@ public class DisplayRecipe extends AppCompatActivity {
                                 measurement = new MixedFraction(whole, numerator, denominator);
                             }
 
-                            Ingredient uInfo = new Ingredient(ingredient, units, measurement, display);
+                            Ingredient uInfo = new Ingredient(ingredient, units, measurement);
                             assert uInfo != null;
                             ingredients.add(uInfo);
                         }
@@ -180,72 +179,333 @@ public class DisplayRecipe extends AppCompatActivity {
         });
     }
 
+
     public void R_goBackClick(View view) {
         finish();
     }
 
     public void R_make(View view) {
+        List<Ingredient> ingredients = new ArrayList<>();
+
+        for (Ingredient in : adapter.getIngredientList()) {
+            ingredients.add(in);
+        }
+        for (final Ingredient in : ingredients) {
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.child("users").child(userID).child("ShoppingList").hasChild(in.getIngredient())) {
+                        Ingredient oldInfo = snapshot.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).getValue(Ingredient.class);
+                       convertData(in, "add", oldInfo);
+                        reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(input);
+                    }else
+                        reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
+        }
+
+        Toast.makeText(this, "Ingredients Added to Shopping List", Toast.LENGTH_SHORT).show();
+    }
+
+
+//    public void R_made(View view) {
+//
+ //   boolean canMake;
+//        List<Ingredient> ingredients = new ArrayList<>();
+//
+//        for (Ingredient in : adapter.getIngredientList()) {
+//            ingredients.add(in);
+//        }
+//        for (final Ingredient in : ingredients) {
+//            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+//            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot snapshot) {
+//                    if (snapshot.child("users").child(userID).child("ShoppingList").hasChild(in.getIngredient())) {
+//                       canMake = true;
+//                    }else{
+    //                   canMake = false;
+    //        Toast.makeText(this, "You do not have all of the Ingredients", Toast.LENGTH_SHORT).show();
+    //                   return;
+    //                   }
+//                }
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                }
+//            });
+//            reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
+//        }
+    //        for (final Ingredient in : ingredients) {
+//            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+//            rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot snapshot) {
+//                    if (canMake) {
+//                       makeData(in);
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                }
+//            });
+//            reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
+//        }
+//
+//        Toast.makeText(this, "Ingredients Removed from Pantry", Toast.LENGTH_SHORT).show();
+//    }
+
+
+
+    private int gcd(int a, int b){
+        if(a == b)
+            return a;
+        if(a == 0)
+            return b;
+        return gcd((b%a), a);
+    }
+
+    private void convertData(final Ingredient in, final String function, final Ingredient oldInfo){
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+         //       for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").child(in.getIngredient())) {
+                    Ingredient iInfo = oldInfo;
+                Log.d("dataCapture", String.valueOf(iInfo));
+                    input = in;
+                    if(iInfo.getMeasurement().getDenominator() == 0) {
+                        iInfo.getMeasurement().setDenominator(1);
+                    }
+                    if(input.getMeasurement().getDenominator() == 0)
+                        input.getMeasurement().setDenominator(1);
+                    int multiplier = 1;
+                    int multiplier2 = 1;
+                    if(!Objects.equals(input.getMeasurement().getDenominator(), iInfo.getMeasurement().getDenominator())){
+                        multiplier2 = (input.getMeasurement().getDenominator() / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+                        multiplier = (iInfo.getMeasurement().getDenominator() / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+                    }
+                    switch(iInfo.getUnits()){
+                        case "tsp":
+                            iInfo.getMeasurement().setNumerator(iInfo.getMeasurement().getNumerator() + (iInfo.getMeasurement().getWhole() * iInfo.getMeasurement().getDenominator()));
+                            if(Objects.equals(input.getUnits(), "tsp")) {
+                                input.getMeasurement().setNumerator((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator());
+
+                            }
+                            if(Objects.equals(input.getUnits(), "tbs")) {
+                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 3);
+                            }
+                            if(Objects.equals(input.getUnits(), "cup")) {
+                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 48);
+                            }
+                            input.getMeasurement().setDenominator((input.getMeasurement().getDenominator() * iInfo.getMeasurement().getDenominator()) / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+                            input.getMeasurement().setNumerator((input.getMeasurement().getNumerator() * multiplier));
+                            input.setUnits("tsp");
+                            break;
+                        case "tbs":
+                            iInfo.getMeasurement().setNumerator((iInfo.getMeasurement().getWhole() * 3 * iInfo.getMeasurement().getDenominator()) + (iInfo.getMeasurement().getNumerator() * 3));
+                            if(Objects.equals(input.getUnits(), "tsp")) {
+                                input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() + (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+                            }
+                            if(Objects.equals(input.getUnits(), "tbs")){
+                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 3);
+                            }
+                            if(Objects.equals(input.getUnits(), "cup")){
+                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 48);
+                            }
+                            input.getMeasurement().setDenominator((input.getMeasurement().getDenominator() * iInfo.getMeasurement().getDenominator()) / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+                            input.getMeasurement().setNumerator((input.getMeasurement().getNumerator() * multiplier));
+                            input.setUnits("tsp");
+                            break;
+                        case "cup":
+                            iInfo.getMeasurement().setNumerator((iInfo.getMeasurement().getWhole() * 48 * iInfo.getMeasurement().getDenominator()) + (iInfo.getMeasurement().getNumerator() * 48));
+                            if(Objects.equals(input.getUnits(), "tsp")){
+                                input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() + (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+                            }
+                            if(Objects.equals(input.getUnits(), "tbs")){
+                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 3);
+                            }
+                            if(Objects.equals(input.getUnits(), "cup")){
+                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 48);
+                            }
+                            input.getMeasurement().setDenominator((input.getMeasurement().getDenominator() * iInfo.getMeasurement().getDenominator()) / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+                            input.getMeasurement().setNumerator((input.getMeasurement().getNumerator() * multiplier));
+                            input.setUnits("tsp");
+                            break;
+                        default:
+                            input.getMeasurement().setWhole(iInfo.getMeasurement().getWhole() + 1);
+                            break;
+                    }
+                    if (Objects.equals(function, "add"))
+                        addData(input, iInfo, multiplier2);
+            //        if (Objects.equals(function, "make"))
+//                        makeData(in, iInfo, multiplier2);
+                }
+
+//            }
+
+
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    private void addData(Ingredient input, Ingredient iInfo, int multiplier2) {
+        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() + (iInfo.getMeasurement().getNumerator() * multiplier2));
+    }
+
+
+
+//    private void makeData(final Ingredient in){
 //        reference.addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
-//                List<Ingredient> ingredients = new ArrayList<>();
-//                for(DataSnapshot ds: dataSnapshot.child("users").child(userID).child("Pantry").getChildren()) {
-////                    String ingredient = "";
-////                    String units = "";
-////                    String display = "";
-////                    MixedFraction measurement = new MixedFraction();
-////                    if (ds.hasChild("ingredient")) {
-////                        ingredient = String.valueOf(ds.child("ingredient").getValue());
-////                    }
-////                    if (ds.hasChild("units")) {
-////                        units = String.valueOf(ds.child("units").getValue());
-////                    }
-////                    if (ds.hasChild("display")) {
-////                        display = String.valueOf(ds.child("display").getValue());
-////                    }
-////                    if (ds.hasChild("measurement")) {
-////                        int whole = 0;
-////                        int numerator = 0;
-////                        int denominator = 0;
-////                        if (ds.child("measurement").hasChild("whole")) {
-////                            whole = Integer.valueOf(String.valueOf(ds.child("whole").getValue()));
-////                        }
-////                        if (ds.child("measurement").hasChild("numerator")) {
-////                            numerator = Integer.valueOf(String.valueOf(ds.child("numerator").getValue()));
-////                        }
-////                        if (ds.child("measurement").hasChild("denominator")) {
-////                            denominator = Integer.valueOf(String.valueOf(ds.child("denominator").getValue()));
-////                        }
-////                        measurement = new MixedFraction(whole, numerator, denominator);
-////                    }
-////
-////                    Ingredient uInfo = new Ingredient(ingredient, units, measurement, display);
-////                    assert uInfo != null;
-////                    ingredients.add(uInfo);
+//                input = in;
+//                for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
+//                    Ingredient iInfo = ds.getValue(Ingredient.class);
+//                    if(iInfo.getMeasurement().getDenominator() == 0) {
+//                        iInfo.getMeasurement().setDenominator(1);
+//                    }
+//                    if(input.getMeasurement().getDenominator() == 0)
+//                        input.getMeasurement().setDenominator(1);
+//                    int multiplier = 1;
+//                    int multiplier2 = 1;
+//                    if(!Objects.equals(input.getMeasurement().getDenominator(), iInfo.getMeasurement().getDenominator())){
+//                        multiplier2 = (input.getMeasurement().getDenominator() / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+//                        multiplier = (iInfo.getMeasurement().getDenominator() / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+//                    }
+//                    switch(iInfo.getUnits()){
+//                        case "tsp":
+//                            iInfo.getMeasurement().setNumerator(iInfo.getMeasurement().getNumerator() + (iInfo.getMeasurement().getWhole() * iInfo.getMeasurement().getDenominator()));
+//                            if(Objects.equals(input.getUnits(), "tsp")) {
+//                                input.getMeasurement().setNumerator((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator());
+//                            }
+//                            if(Objects.equals(input.getUnits(), "tbs")) {
+//                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 3);
+//                            }
+//                            if(Objects.equals(input.getUnits(), "cup")) {
+//                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 48);
+//                            }
+//                            input.getMeasurement().setDenominator((input.getMeasurement().getDenominator() * iInfo.getMeasurement().getDenominator()) / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+//                            input.getMeasurement().setNumerator((input.getMeasurement().getNumerator() * multiplier) + (iInfo.getMeasurement().getNumerator() * multiplier2));
+//                            input.setUnits("tsp");
+//                            break;
+//                        case "tbs":
+//                            iInfo.getMeasurement().setNumerator((iInfo.getMeasurement().getWhole() * 3 * iInfo.getMeasurement().getDenominator()) + (iInfo.getMeasurement().getNumerator() * 3));
+//                            if(Objects.equals(input.getUnits(), "tsp")) {
+//                                input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() + (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+//                            }
+//                            if(Objects.equals(input.getUnits(), "tbs")){
+//                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 3);
+//                            }
+//                            if(Objects.equals(input.getUnits(), "cup")){
+//                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 48);
+//                            }
+//                            input.getMeasurement().setDenominator((input.getMeasurement().getDenominator() * iInfo.getMeasurement().getDenominator()) / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+//                            input.getMeasurement().setNumerator((input.getMeasurement().getNumerator() * multiplier) + (iInfo.getMeasurement().getNumerator() * multiplier2));
+//                            input.setUnits("tsp");
+//                            break;
+//                        case "cup":
+//                            iInfo.getMeasurement().setNumerator((iInfo.getMeasurement().getWhole() * 48 * iInfo.getMeasurement().getDenominator()) + (iInfo.getMeasurement().getNumerator() * 48));
+//                            if(Objects.equals(input.getUnits(), "tsp")){
+//                                input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() + (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+//                            }
+//                            if(Objects.equals(input.getUnits(), "tbs")){
+//                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 3);
+//                            }
+//                            if(Objects.equals(input.getUnits(), "cup")){
+//                                input.getMeasurement().setNumerator(((input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()) + input.getMeasurement().getNumerator()) * 48);
+//                            }
+//                            input.getMeasurement().setDenominator((input.getMeasurement().getDenominator() * iInfo.getMeasurement().getDenominator()) / gcd(iInfo.getMeasurement().getDenominator(), input.getMeasurement().getDenominator()));
+//                            input.getMeasurement().setNumerator((input.getMeasurement().getNumerator() * multiplier) + (iInfo.getMeasurement().getNumerator() * multiplier2));
+//                            input.setUnits("tsp");
+//                            break;
+//                        default:
+//                            input.getMeasurement().setWhole(iInfo.getMeasurement().getWhole() + 1);
+//                            break;
+//                    }
+//                    if(input.getMeasurement().getDenominator() == 0)
+//                        input.getMeasurement().setDenominator(1);
+//                    if(((input.getMeasurement().getNumerator() / input.getMeasurement().getDenominator()) >= 48) && (Objects.equals(input.getUnits(), "tsp"))) {
+//                        input.setUnits("cup");
+//                        input.getMeasurement().setDenominator(input.getMeasurement().getDenominator() * 48);
+//                        input.getMeasurement().setWhole((input.getMeasurement().getNumerator() / input.getMeasurement().getDenominator()));
+//                        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() - (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+//                        int common = gcd(input.getMeasurement().getNumerator(), input.getMeasurement().getDenominator());
+//                        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator()/common);
+//                        input.getMeasurement().setDenominator(input.getMeasurement().getDenominator()/common);
+//                        if (input.getMeasurement().getNumerator() != 0) {
+//                            if ((input.getMeasurement().getNumerator() / ((input.getMeasurement().getDenominator() * common) / 16)) >= 3) {
+//                                int tempD = input.getMeasurement().getDenominator() * 3;
+//                                int tempV = ((input.getMeasurement().getNumerator() / tempD));
+//                                int tempN = (input.getMeasurement().getNumerator() - (input.getMeasurement().getWhole() * tempD));
+//                                common = gcd(input.getMeasurement().getNumerator(), tempD);
+//                                tempN = (tempN/common);
+//                                tempD = (tempD/common);
+//                                if (tempN != 0)
+//                                    input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
+//                                else
+//                                    input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " tbs" + tempN + " tsp");
+//                            }
+//                            else
+//                                input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " " + input.getMeasurement().getNumerator() + "/" + input.getMeasurement().getDenominator() + " " + input.getUnits());
+//                        }
+//                        else
+//                            input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " " + input.getUnits());
+//                    }else if (((input.getMeasurement().getNumerator() / input.getMeasurement().getDenominator()) >= 3) && (Objects.equals(input.getUnits(), "tsp"))) {
+//                        //     Log.d(TAG, "showData: tbs \n");
+//                        input.setUnits("tbs");
+//                        input.getMeasurement().setDenominator(input.getMeasurement().getDenominator() * 3);
+//                        input.getMeasurement().setWhole(input.getMeasurement().getNumerator() / input.getMeasurement().getDenominator());
+//                        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() - (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+//                        int common = gcd(input.getMeasurement().getNumerator(), input.getMeasurement().getDenominator());
+//                        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator()/common);
+//                        input.getMeasurement().setDenominator(input.getMeasurement().getDenominator()/common);
+//                        if (input.getMeasurement().getNumerator() != 0)
+//                            input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " " + input.getMeasurement().getNumerator() + "/" + input.getMeasurement().getDenominator() + " tbs");
+//                        else
+//                            input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " tbs");
+//                    }else{
+//                        //       Log.d(TAG, "showData: tsp \n");
+//                        input.getMeasurement().setWhole(input.getMeasurement().getNumerator() / input.getMeasurement().getDenominator());
+//                        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator() - (input.getMeasurement().getWhole() * input.getMeasurement().getDenominator()));
+//                        int common = gcd(input.getMeasurement().getNumerator(), input.getMeasurement().getDenominator());
+//                        input.getMeasurement().setNumerator(input.getMeasurement().getNumerator()/common);
+//                        input.getMeasurement().setDenominator(input.getMeasurement().getDenominator()/common);
+//                        if (input.getMeasurement().getNumerator() != 0) {
+//                            if (input.getMeasurement().getWhole() != 0)
+//                                input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + " " + input.getMeasurement().getNumerator() + "/" + input.getMeasurement().getDenominator() + " tsp");
+//                            else
+//                                input.getMeasurement().setDisplay(input.getMeasurement().getNumerator() + "/" + input.getMeasurement().getDenominator() + " tsp");
+//                        }else
+//                            input.getMeasurement().setDisplay(input.getMeasurement().getWhole() + "tsp");
+//                    }
+//                    if(input.getMeasurement().getNumerator() == 0) {
+//                        input.getMeasurement().setDenominator(1);
+//                    }
 //                }
-//                for (Ingredient in : adapter.getIngredientList()) {
-//                    ingredients.add(in);
-//                }
-//                for (Ingredient in : ingredients) {
-//                    reference.child("users").child(userID).child("Pantry").child(in.getIngredient()).setValue(in);
-//                }
+//
 //            }
+//
+//
+//
 //
 //            @Override
 //            public void onCancelled(DatabaseError databaseError) {
 //
 //            }
 //        });
-        List<Ingredient> ingredients = new ArrayList<>();
+//
+//    }
 
-        for (Ingredient in : adapter.getIngredientList()) {
-            ingredients.add(in);
-        }
-        for (Ingredient in : ingredients) {
-            reference.child("users").child(userID).child("ShoppingList").child(in.getIngredient()).setValue(in);
-        }
-
-        Toast.makeText(this, "Ingredients Added to Shopping List", Toast.LENGTH_SHORT).show();
-    }
 }
 

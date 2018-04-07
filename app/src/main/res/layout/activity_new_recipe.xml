@@ -97,7 +97,7 @@
             android:layout_marginTop="12dp"
             android:background="@drawable/general_input_field"
             android:ems="10"
-            android:hint="@string/add_number"
+            android:hint="#"
             android:inputType="date"
             app:layout_constraintEnd_toStartOf="@+id/spinner"
             app:layout_constraintHorizontal_bias="0.0"

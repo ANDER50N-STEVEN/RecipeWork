@@ -256,11 +256,13 @@ public class NewRecipe extends AppCompatActivity {
                 String measurementString = mAmount.getText().toString();
 
                 MixedFraction measurement = new MixedFraction(measurementString);
+                measurement.setDisplay(measurementString + " " + units);
                 Ingredient newIngredient = new Ingredient(item, units, measurement);
                 mAdapter.add(newIngredient);
                 mAdapter.notifyDataSetChanged();
                 mItemEdit.setText("");
                 mAmount.setText("");
+                spinner.setSelection(0);
 
 //                for (int i = 0; i < mAdapter.getCount(); ++i){
 //                    // This assumes you only have the list items in the SharedPreferences.
@@ -309,6 +311,8 @@ public class NewRecipe extends AppCompatActivity {
                 editor.commit();
             }
         });
+
+
 
         //--------------------------------------------------
 //        for (int i = 0;; ++i){
