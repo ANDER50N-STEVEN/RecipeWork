@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,9 +21,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final int RC_SAVE = 100;
     private static final String TAG = "EmailPassword";
     private EditText mEmailField;
     private EditText mPasswordField;
+    private CheckBox mRememberMe;
 
     private FirebaseAuth mAuth;
 
@@ -33,6 +36,8 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mEmailField = findViewById(R.id.emailInput);
         mPasswordField = findViewById(R.id.passwordInput);
+        mRememberMe = findViewById(R.id.checkBoxRememberMe);
+
         Button mLoginBtn = findViewById(R.id.loginButton);
         Button mSignUpBtn = findViewById(R.id.signUp);
         TextView mForgetPssword = findViewById(R.id.forgetPassword);
@@ -74,6 +79,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         else
         {
+            if (mRememberMe.isChecked()) {
+            }
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -92,6 +99,17 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SAVE) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Credentials Saved", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

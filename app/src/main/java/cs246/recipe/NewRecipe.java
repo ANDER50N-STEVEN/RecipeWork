@@ -181,10 +181,10 @@ public class NewRecipe extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                units = "";
-                if (!adapterView.getItemAtPosition(i).toString().equals(""))
-                    units = " ";
-                units += adapterView.getItemAtPosition(i).toString();
+//                units = "";
+//                if (!adapterView.getItemAtPosition(i).toString().equals(""))
+//                    units = " ";
+                units = adapterView.getItemAtPosition(i).toString();
             }
 
             @Override

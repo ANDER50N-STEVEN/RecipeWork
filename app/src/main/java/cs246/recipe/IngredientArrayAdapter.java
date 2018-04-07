@@ -16,8 +16,8 @@ import java.util.List;
 
 public class IngredientArrayAdapter extends BaseAdapter {
 
-    List<Ingredient> ingredientList;
-    Context mContext;
+    private List<Ingredient> ingredientList;
+    private Context mContext;
 
     IngredientArrayAdapter(Context context) {
         ingredientList = new ArrayList<>();
@@ -52,7 +52,11 @@ public class IngredientArrayAdapter extends BaseAdapter {
         MixedFraction measurement = ingredient.getMeasurement();
 
         amount.setText(String.valueOf(measurement.getDisplay()));
-        units.setText(String.valueOf(ingredient.getUnits()));
+        if (String.valueOf(ingredient.getUnits()).equals("")) {
+            units.setText(String.valueOf(ingredient.getUnits()));
+        } else  {
+            units.setText(" " + String.valueOf(ingredient.getUnits()));
+        }
         ingredientView.setText(String.valueOf(ingredient.getIngredient()));
 
         return view;
@@ -60,6 +64,10 @@ public class IngredientArrayAdapter extends BaseAdapter {
 
     public void add(Ingredient ingredient) {
         ingredientList.add(ingredient);
+    }
+
+    public void addAll(List<Ingredient> ingredients) {
+        ingredientList.addAll(ingredients);
     }
 
     public List<Ingredient> getIngredientList() {

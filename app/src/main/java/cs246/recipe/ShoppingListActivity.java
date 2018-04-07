@@ -371,7 +371,11 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             Log.d(TAG, "showData: database value: " + uInfo.getMeasurement().getDisplay());
             Log.d(TAG, "showData: database units: " + uInfo.getUnits());
             Log.d(TAG, "showData: trial 1: " + uInfo.getMeasurement().getDisplay());
-            shoppingList.add(uInfo.getMeasurement().getDisplay() + " - " + uInfo.getIngredient());
+            if (uInfo.getUnits().equals("")) {
+                shoppingList.add(uInfo.getMeasurement().getDisplay() + " - " + uInfo.getIngredient());
+            } else {
+                shoppingList.add(uInfo.getMeasurement().getDisplay() + " " + uInfo.getUnits() + " - " + uInfo.getIngredient());
+            }
             ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,shoppingList);
             mShoppingListView.setAdapter(adapter);
         }

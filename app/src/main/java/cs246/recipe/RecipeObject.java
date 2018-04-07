@@ -10,6 +10,8 @@ public class RecipeObject {
     private List<Ingredient> ingredients;
     private String instructions;
 
+    RecipeObject() {}
+
     RecipeObject(List<Ingredient> ingredients, String instructions) {
         this.ingredients = ingredients;
         this.instructions = instructions;
