@@ -80,7 +80,7 @@ public class MixedFraction {
     private void convertFromString(String measurement) {
         setWhole(0);
         setNumerator(0);
-        setDenominator(0);
+        setDenominator(1);
 
         if (measurement.contains("-") || measurement.contains(" ")) {
             String[] mixed = measurement.split("-");

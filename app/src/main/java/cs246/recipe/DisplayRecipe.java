@@ -24,6 +24,7 @@ import java.util.List;
 public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
+    DatabaseReference shoppingList;
 
     List<Ingredient> ingredients;
     IngredientArrayAdapter adapter;
@@ -54,7 +55,6 @@ public class DisplayRecipe extends AppCompatActivity {
         ingredientsList.setAdapter(adapter);
 
         database = FirebaseDatabase.getInstance();
-        ingredients = new ArrayList<>();
         reference = database.getReference().child("users").child(userID).child("Cookbook").child(recipeName);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -72,18 +72,16 @@ public class DisplayRecipe extends AppCompatActivity {
 
             }
         });
-    }
 
-    public void R_goBackClick(View view) {
-        finish();
-    }
-
-    public void R_make(View view) {
-        DatabaseReference shoppingList = database.getReference().child("users").child(userID).child("ShoppingList");
+        ingredients = new ArrayList<>();
+        shoppingList = database.getReference().child("users").child(userID).child("ShoppingList");
         shoppingList.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                ingredients.clear();
                 for (DataSnapshot ingredient: dataSnapshot.getChildren()) {
+                    if (ingredient == null)
+                        continue;
                     Ingredient ingredient1 = ingredient.getValue(Ingredient.class);
                     ingredients.add(ingredient1);
                 }
@@ -94,9 +92,34 @@ public class DisplayRecipe extends AppCompatActivity {
 
             }
         });
+    }
 
+    public void R_goBackClick(View view) {
+        finish();
+    }
+
+    public void R_make(View view) {
         for (Ingredient in : adapter.getIngredientList()) {
-            ingredients.add(in);
+            boolean found = false;
+            for (Ingredient in2 : ingredients) {
+                Log.d("merging", "merging");
+                if (in2.getIngredient().equals(in.getIngredient())) {
+                    if (!in.getUnits().equals("") &&
+                            !in.getUnits().equals("floz") &&
+                            !in2.getUnits().equals("") &&
+                            !in2.getUnits().equals("floz")) {
+                        Log.d("merging", "merging2");
+                        int index = ingredients.indexOf(in2);
+                        MergeIngredients mergeIngredients = new MergeIngredients();
+                        ingredients.set(index, mergeIngredients.merge(in2, in));
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                ingredients.add(in);
+            }
         }
         for (Ingredient in : ingredients) {
             shoppingList.child(in.getIngredient()).setValue(in);
