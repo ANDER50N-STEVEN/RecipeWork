@@ -7,11 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 
     /**
     * MainActivity:
-    *      Displays loading page before entering login activity.
+    *      Displays Splash screen before entering login activity.
     */
 public class MainActivity extends AppCompatActivity {
 
     @Override
+    /**
+     * loads splash screen and an intent to th elogin page
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

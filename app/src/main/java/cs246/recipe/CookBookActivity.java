@@ -36,10 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * to display list of recipes
- * and has button to "add new recipe"
+ * Displays list of recipes
+ * through Image view and Text View
+ * and has a button to "add new recipe"
  */
-
 public class CookBookActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
@@ -52,8 +52,12 @@ public class CookBookActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private String userID;
-    private    String name;
+    private String name;
 
+    /**
+     * defining variable, buttons and Firebase authentication
+     * @param savedInstanceState instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,37 +77,44 @@ public class CookBookActivity extends AppCompatActivity {
         userID = user.getUid();
 
         mUploads = new ArrayList<>();
-
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-
-
-        Toolbar mToolBar = findViewById(R.id.toolBarView);
-        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial));
-
         final ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
+            /**
+             * When moving data in recycler view
+             * @param recyclerView recycler view of the page / kind of like listview
+             * @param viewHolder contains the name and Image data
+             * @param target place to be sent
+             * @return
+             */
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
 
+            /**
+             * when swiping one list to delete the data
+             * @param viewHolder contains the name and Image data
+             * @param direction swiping direction
+             */
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 TextView textView = viewHolder.itemView.findViewById(R.id.text_view_name);
                 String name = textView.getText().toString();
-                Log.d("deleteRecie", name);
+                Log.d("deleteRecipe", name);
                 mDatabaseRef.child("users").child(userID).child("Cookbook").child(name).removeValue();
                 mDatabaseRef.child("users").child(userID).child("Photos").child(name).removeValue();
-
-
             }
         };
+
+        Toolbar mToolBar = findViewById(R.id.toolBarView);
+        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
 
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_logo_white))
                 )
                 .build();
 
@@ -127,7 +138,8 @@ public class CookBookActivity extends AppCompatActivity {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
-                        switch (position) {
+                        switch(position)
+                        {
                             case 1:
                                 Intent intent = new Intent(CookBookActivity.this, CookBookActivity.class);
                                 startActivity(intent);
@@ -144,13 +156,14 @@ public class CookBookActivity extends AppCompatActivity {
                                 intent = new Intent(CookBookActivity.this, NewRecipe.class);
                                 startActivity(intent);
                                 break;
-                            case 5:
+                            case 6:
                                 intent = new Intent(CookBookActivity.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 6:
-                                intent = new Intent(CookBookActivity.this, NewRecipe.class);
+                            case 7:
+                                intent = new Intent(CookBookActivity.this, LoginActivity.class);
                                 startActivity(intent);
+                                mAuth.signOut();
                                 break;
                         }
                         return true;
@@ -160,6 +173,10 @@ public class CookBookActivity extends AppCompatActivity {
         result.addStickyFooterItem(new PrimaryDrawerItem().withName("© Beet It").withIcon(R.drawable.beet_it_blue));
 
         mDatabaseRef.child("users").child(userID).child("Photos").addValueEventListener(new ValueEventListener() {
+            /**
+             * Gets data fromfirebase and add them to our view list in a loop
+             * @param dataSnapshot instance that contains data from a Firebase Database location
+             */
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mUploads.clear();
@@ -177,12 +194,14 @@ public class CookBookActivity extends AppCompatActivity {
             }
 
             @Override
+            /**
+             * checks for error on loading the data
+             */
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(CookBookActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 mProgressCircle.setVisibility(View.INVISIBLE);
             }
         });
-
 
         FloatingActionButton mAddNewRecipe = findViewById(R.id.addNewRecipe);
 
@@ -208,8 +227,5 @@ public class CookBookActivity extends AppCompatActivity {
                 }
             }
         };
-
-
     }
-
 }

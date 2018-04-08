@@ -78,32 +78,14 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         TextView pageName = findViewById(R.id.pageName);
         pageName.setText("Shopping List");
 
-        spinner = findViewById(R.id.spinner1);
-        final String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
-        final ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
-        madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(madapter);
-        spinner.setOnItemSelectedListener(this);
-
         mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
-        final FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
-        load = true;
-        final DatabaseReference login = myRef.child("users").child(userID);
-
-        mItemEdit = findViewById(R.id.item_editText);
-        mValueEdit = findViewById(R.id.value_editText);
-        final Button mAddButton = findViewById(R.id.add_button);
-        Button mCheckoutButton = findViewById(R.id.checkout);
-
-        mShoppingListView = findViewById(R.id.shoppingList);
-        mAdapter = new IngredientArrayAdapter(this);
-        mShoppingListView.setAdapter(mAdapter);
 
         Toolbar mToolBar = findViewById(R.id.toolBarView);
-        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial));
+        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
 
         //displays navigation bar on top of page
 
@@ -111,16 +93,17 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_logo_white))
                 )
                 .build();
 
         //if you want to update the items at a later time it is recommended to keep it in a variable
         SecondaryDrawerItem item1 = new SecondaryDrawerItem().withIdentifier(1).withName(R.string.title_home).withIcon(R.drawable.ic_home_black_24dp);
-        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.pantry_button).withIcon(R.drawable.ic_shopping_basket_black_24dp);
-        SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withName(R.string.add_recipe).withIcon(R.drawable.ic_library_add_black_24dp);
-        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
-        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
+        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.shopping_cart).withIcon(R.drawable.ic_shopping_cart_black_24dp);
+        SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withName(R.string.pantry_button).withIcon(R.drawable.ic_shopping_basket_black_24dp);
+        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.add_recipe).withIcon(R.drawable.ic_library_add_black_24dp);
+        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
+        SecondaryDrawerItem item6 = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
 
         //create the drawer and remember the `Drawer` result object
         Drawer result = new DrawerBuilder()
@@ -128,7 +111,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 .withAccountHeader(headerResult)
                 .withToolbar(mToolBar)
                 .addDrawerItems(
-                        item1, item2, item3, new DividerDrawerItem(), item4, item5
+                        item1, item2, item3, item4, new DividerDrawerItem(), item5, item6
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -141,20 +124,25 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                                 startActivity(intent);
                                 break;
                             case 2:
-                                intent = new Intent(ShoppingListActivity.this, PantryActivity.class);
+                                intent = new Intent(ShoppingListActivity.this, ShoppingListActivity.class);
                                 startActivity(intent);
                                 break;
                             case 3:
-                                intent = new Intent(ShoppingListActivity.this, NewRecipe.class);
+                                intent = new Intent(ShoppingListActivity.this, PantryActivity.class);
                                 startActivity(intent);
                                 break;
                             case 4:
+                                intent = new Intent(ShoppingListActivity.this, NewRecipe.class);
+                                startActivity(intent);
+                                break;
+                            case 6:
                                 intent = new Intent(ShoppingListActivity.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 5:
-                                intent = new Intent(ShoppingListActivity.this, NewRecipe.class);
+                            case 7:
+                                intent = new Intent(ShoppingListActivity.this, LoginActivity.class);
                                 startActivity(intent);
+                                mAuth.signOut();
                                 break;
                         }
                         return true;
@@ -162,6 +150,23 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 })
                 .build();
         result.addStickyFooterItem(new PrimaryDrawerItem().withName("© Beet It").withIcon(R.drawable.beet_it_blue));
+
+        spinner = findViewById(R.id.spinner1);
+        final String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
+        final ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(madapter);
+        spinner.setOnItemSelectedListener(this);
+        final DatabaseReference login = myRef.child("users").child(userID);
+
+        mItemEdit = findViewById(R.id.item_editText);
+        mValueEdit = findViewById(R.id.value_editText);
+        final Button mAddButton = findViewById(R.id.add_button);
+        Button mCheckoutButton = findViewById(R.id.checkout);
+
+        mShoppingListView = findViewById(R.id.shoppingList);
+        mAdapter = new IngredientArrayAdapter(this);
+        mShoppingListView.setAdapter(mAdapter);
 
         /**
          * This not only activates when a state change occurs but also when the activity

@@ -1,12 +1,10 @@
 package cs246.recipe;
 
 /**
- * Created by Steven Anderson on 3/20/2018.
  *  Class that contains the name of an ingredient,
  *  the units that the ingredient is in, the number
  *  as a mixedFraction object and how it will display
  */
-
 public class Ingredient {
 
     private String ingredient;
@@ -22,6 +20,13 @@ public class Ingredient {
         setMeasurement(measurement);
     }
 
+    /**
+     * constructor to set value
+     * @param ingredient individual ingredient
+     * @param units units of individual ingredient
+     * @param measurement measurement of individual ingredient
+     * @param display display individual ingredient
+     */
     public Ingredient(String ingredient, String units, MixedFraction measurement, String display){
         setIngredient(ingredient);
         setUnits(units);

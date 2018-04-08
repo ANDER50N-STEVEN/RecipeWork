@@ -96,6 +96,15 @@ public class NewRecipe extends AppCompatActivity {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        //declare StorageReference for uploading photo
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef2 = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        userID = user.getUid();
+
         TextView pageName = findViewById(R.id.pageName);
         pageName.setText("Add New Recipe");
 
@@ -106,7 +115,7 @@ public class NewRecipe extends AppCompatActivity {
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_logo_white))
                 )
                 .build();
 
@@ -114,8 +123,9 @@ public class NewRecipe extends AppCompatActivity {
         SecondaryDrawerItem item1 = new SecondaryDrawerItem().withIdentifier(1).withName(R.string.title_home).withIcon(R.drawable.ic_home_black_24dp);
         SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.shopping_cart).withIcon(R.drawable.ic_shopping_cart_black_24dp);
         SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withName(R.string.pantry_button).withIcon(R.drawable.ic_shopping_basket_black_24dp);
-        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
-        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
+        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.add_recipe).withIcon(R.drawable.ic_library_add_black_24dp);
+        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
+        SecondaryDrawerItem item6 = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
 
         //create the drawer and remember the `Drawer` result object
         Drawer result = new DrawerBuilder()
@@ -123,7 +133,7 @@ public class NewRecipe extends AppCompatActivity {
                 .withAccountHeader(headerResult)
                 .withToolbar(mToolBar)
                 .addDrawerItems(
-                        item1, item2, item3, new DividerDrawerItem(), item4, item5
+                        item1, item2, item3, item4, new DividerDrawerItem(), item5, item6
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -144,12 +154,17 @@ public class NewRecipe extends AppCompatActivity {
                                 startActivity(intent);
                                 break;
                             case 4:
+                                intent = new Intent(NewRecipe.this, NewRecipe.class);
+                                startActivity(intent);
+                                break;
+                            case 6:
                                 intent = new Intent(NewRecipe.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 5:
-                                intent = new Intent(NewRecipe.this, NewRecipe.class);
+                            case 7:
+                                intent = new Intent(NewRecipe.this, LoginActivity.class);
                                 startActivity(intent);
+                                mAuth.signOut();
                                 break;
                         }
                         return true;
@@ -180,16 +195,6 @@ public class NewRecipe extends AppCompatActivity {
             }
         };
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-        //declare StorageReference for uploading photo
-        mStorageRef = FirebaseStorage.getInstance().getReference();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-        mDatabaseRef2 = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
-
-        final FirebaseUser user = mAuth.getCurrentUser();
-        userID = user.getUid();
-
         mProgressDialog = new ProgressDialog(this);
 
         spinner = findViewById(R.id.spinner);
@@ -200,9 +205,6 @@ public class NewRecipe extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                units = "";
-//                if (!adapterView.getItemAtPosition(i).toString().equals(""))
-//                    units = " ";
                 units = adapterView.getItemAtPosition(i).toString();
             }
 
@@ -212,7 +214,6 @@ public class NewRecipe extends AppCompatActivity {
             }
         });
 
-//        ingredients = new ArrayList<>();
         ingredientList = (ListView) findViewById(R.id.listIngredient);
 
         /**
@@ -288,15 +289,6 @@ public class NewRecipe extends AppCompatActivity {
                 mAmount.setText("");
                 spinner.setSelection(0);
 
-//                for (int i = 0; i < mAdapter.getCount(); ++i){
-//                    // This assumes you only have the list items in the SharedPreferences.
-//                    try {
-////                        editor.putString(String.valueOf(i), gson.toJson(mAdapter.getItem(i)));
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                editor.commit();
             }
         });
 

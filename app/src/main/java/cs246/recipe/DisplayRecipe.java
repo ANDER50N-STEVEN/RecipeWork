@@ -32,9 +32,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/*
-        Displays the saved recipes listed in cookbook when you select them
+/**
+ * Display individual recipe
  */
 public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
@@ -45,6 +44,7 @@ public class DisplayRecipe extends AppCompatActivity {
     List<Ingredient> ingredients;
     IngredientArrayAdapter adapter;
     FirebaseUser user;
+    private FirebaseAuth mAuth;
     String userID;
     String recipeName;
 
@@ -53,6 +53,10 @@ public class DisplayRecipe extends AppCompatActivity {
     TextView instructionsField;
     ImageView recipeImage;
 
+    /**
+     * defining variable, buttons and Firebase authentication
+     * @param savedInstanceState instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +66,7 @@ public class DisplayRecipe extends AppCompatActivity {
         instructionsField = findViewById(R.id.R_instructionsField);
         recipeImage = findViewById(R.id.R_recipeImage);
 
+        mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
 
@@ -83,7 +88,7 @@ public class DisplayRecipe extends AppCompatActivity {
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_logo_white))
                 )
                 .build();
 
@@ -125,13 +130,14 @@ public class DisplayRecipe extends AppCompatActivity {
                                 intent = new Intent(DisplayRecipe.this, NewRecipe.class);
                                 startActivity(intent);
                                 break;
-                            case 5:
+                            case 6:
                                 intent = new Intent(DisplayRecipe.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 6:
-                                intent = new Intent(DisplayRecipe.this, NewRecipe.class);
+                            case 7:
+                                intent = new Intent(DisplayRecipe.this, LoginActivity.class);
                                 startActivity(intent);
+                                mAuth.signOut();
                                 break;
                         }
                         return true;
@@ -141,6 +147,10 @@ public class DisplayRecipe extends AppCompatActivity {
         result.addStickyFooterItem(new PrimaryDrawerItem().withName("© Beet It").withIcon(R.drawable.beet_it_blue));
 
         reference.addValueEventListener(new ValueEventListener() {
+            /**
+             * retrieves data into adapter from firebase database
+             * @param dataSnapshot instance contains data from a Firebase Database location
+             */
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("dataCapture", "checking for data to capture");
@@ -160,6 +170,10 @@ public class DisplayRecipe extends AppCompatActivity {
         ingredients = new ArrayList<>();
         shoppingList = database.getReference().child("users").child(userID).child("ShoppingList");
         shoppingList.addValueEventListener(new ValueEventListener() {
+            /**
+             * retrieves data from firebase
+             * @param dataSnapshot instance contains data from a Firebase Database location
+             */
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ingredients.clear();
@@ -170,7 +184,6 @@ public class DisplayRecipe extends AppCompatActivity {
                     ingredients.add(ingredient1);
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -180,6 +193,9 @@ public class DisplayRecipe extends AppCompatActivity {
         photos = database.getReference().child("users").child(userID).child("Photos").child(recipeName);
         photos.addValueEventListener(new ValueEventListener() {
             @Override
+            /**
+             * loads the picture using picasso
+             */
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UploadImageObject upload = dataSnapshot.getValue(UploadImageObject.class);
                 if (upload == null)
@@ -192,7 +208,6 @@ public class DisplayRecipe extends AppCompatActivity {
                             .into(recipeImage);
 
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -200,13 +215,18 @@ public class DisplayRecipe extends AppCompatActivity {
         });
     }
 
+    /**
+     * ends the page
+     * @param view view that is clicked on
+     */
     public void R_goBackClick(View view) {
         finish();
     }
 
-
-    // generates a list of ingredients from recipe and adds them to shopping list
-
+    /**
+     * generates a list of ingredients from recipe and adds them to shopping list
+     * @param view view that is clicked on
+     */
     public void R_make(View view) {
         for (Ingredient in : adapter.getIngredientList()) {
             boolean found = false;
@@ -243,4 +263,3 @@ public class DisplayRecipe extends AppCompatActivity {
         Toast.makeText(this, "Ingredients Added to Shopping List", Toast.LENGTH_SHORT).show();
     }
 }
-

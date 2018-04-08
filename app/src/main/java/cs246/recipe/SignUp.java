@@ -17,6 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+/**
+ * Lets the user create a new account through Firebase createUserWithEmailAndPassword
+ */
 public class SignUp extends AppCompatActivity {
 
     private static final String TAG = "EmailPassword";
@@ -28,6 +31,10 @@ public class SignUp extends AppCompatActivity {
     private String name;
     private FirebaseAuth mAuth;
 
+    /**
+     * initializes Firebase Authentication, textfield and buttons
+     * @param savedInstanceState  a reference to a Bundle object
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +56,11 @@ public class SignUp extends AppCompatActivity {
 
     }
 
+    /**
+     * Lets the user to create new account
+     * through irebase createUserWithEmailAndPassword function
+     * Also sets user name through setDisplayName
+     */
     private void startSignUp()
     {
         String email = mEmailField.getText().toString();

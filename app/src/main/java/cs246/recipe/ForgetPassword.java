@@ -15,11 +15,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-/*
-        Allows the user to send an email to themselves with steps
-        to reset their forgotten password
+/**
+ * Allows the user to send an email to themselves with steps
+ * to reset their forgotten password
  */
-
 public class ForgetPassword extends AppCompatActivity {
 
     private static final String TAG = "EmailPassword";
@@ -29,6 +28,10 @@ public class ForgetPassword extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    /**
+     * defining variable, buttons and Firebase authentication
+     * @param savedInstanceState instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,9 @@ public class ForgetPassword extends AppCompatActivity {
         });
     }
 
+    /**
+     * sends an email to the user for the request of resetting the password
+     */
     private void resetPassword()
     {
         String emailAddress = mEmailField.getText().toString();

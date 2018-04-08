@@ -23,12 +23,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".CookBookActivity" />
-        <activity android:name=".PantryActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity android:name=".PantryActivity"/>
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".NewRecipe" />
-        <activity
-            android:name=".SignUp"
+        <activity android:name=".SignUp"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ForgetPassword"
@@ -37,7 +35,6 @@
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DisplayRecipe" />
-        <activity android:name=".AboutUs"></activity>
+        <activity android:name=".AboutUs"/>
     </application>
-
 </manifest>

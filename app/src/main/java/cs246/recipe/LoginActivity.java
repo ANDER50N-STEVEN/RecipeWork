@@ -19,11 +19,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-/*
-        Login section to preserve privacy and unique aspects of
-        each users shopping list
+/**
+ * Login section to preserve privacy and unique aspects of
+ * each users shopping list
  */
-
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SAVE = 100;
@@ -34,6 +33,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    /**
+     * defining variable, buttons and Firebase authentication
+     * @param savedInstanceState instance state
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -69,11 +72,17 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * gets current user when on start
+     */
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
+    /**
+     * user signIn using password and email
+     */
     private void startSignIn()
     {
         String email = mEmailField.getText().toString();
@@ -107,6 +116,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     * @param requestCode which request we're responding to
+     * @param resultCode Making sure the request was successful
+     * @param data intent data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

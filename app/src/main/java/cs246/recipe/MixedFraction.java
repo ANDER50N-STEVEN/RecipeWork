@@ -1,13 +1,9 @@
 package cs246.recipe;
 
-import java.util.MissingFormatArgumentException;
-
 /**
- * Created by Eriqua Eisele on 3/30/2018.
  * MixedFraction:
  *      Stores data for a mixed fraction.
  */
-
 public class MixedFraction {
     Integer whole;
     Integer numerator;
@@ -15,8 +11,10 @@ public class MixedFraction {
     String display;
 
     /**
-     * Constructors:
-     *      Save data to class.
+     * save data to class
+     * @param whole the whole number of ingredient
+     * @param numerator the numerator of the whole number
+     * @param denominator the denominator of the whole number
      */
     MixedFraction(Integer whole, Integer numerator, Integer denominator) {
         setWhole(whole);
@@ -25,6 +23,11 @@ public class MixedFraction {
         createDisplay();
     }
 
+    /**
+     * constructor to set the values with two param
+     * @param numerator the numerator of the whole number
+     * @param denominator the denominator of the whole number
+     */
     MixedFraction(Integer numerator, Integer denominator) {
         setNumerator(numerator);
         setDenominator(denominator);
@@ -32,6 +35,10 @@ public class MixedFraction {
         createDisplay();
     }
 
+    /**
+     * constructor to set the values with one param
+     * @param whole whole measurement of the ingredient
+     */
     MixedFraction(Integer whole) {
         setWhole(whole);
         setNumerator(0);
@@ -39,11 +46,18 @@ public class MixedFraction {
         createDisplay();
     }
 
+    /**
+     * calls convert and display method
+     * @param measurement the measurement of the ingredient
+     */
     MixedFraction(String measurement) {
         convertFromString(measurement);
         createDisplay();
     }
 
+    /**
+     * default constructor to set initial value
+     */
     MixedFraction() {
         setWhole(0);
         setNumerator(0);
@@ -52,36 +66,65 @@ public class MixedFraction {
     }
 
     /**
-     * getters and setters
+     * setter of denominator
+     * @param denominator sets denominator
      */
     public void setDenominator(Integer denominator) {
         this.denominator = denominator;
     }
 
+    /**
+     * setter of numerator
+     * @param numerator sets numerator
+     */
     public void setNumerator(Integer numerator) {
         this.numerator = numerator;
     }
 
+    /**
+     * setter of whole number
+     * @param whole sets whole number
+     */
     public void setWhole(Integer whole) {
         this.whole = whole;
     }
 
+    /**
+     * setter of diplay
+     * @param display sets display
+     */
     public void setDisplay(String display) {
         this.display = display;
     }
 
+    /**
+     * getters of denominator
+     * @return denominator
+     */
     public Integer getDenominator() {
         return denominator;
     }
 
+    /**
+     * getters of numerator
+     * @return numerator
+     */
     public Integer getNumerator() {
         return numerator;
     }
 
+    /**
+     * getters of whole number
+     * @return whole number
+     */
     public Integer getWhole() {
         return whole;
     }
 
+    /**
+     * getters of display
+     * @return display
+     */
     public String getDisplay() {
         return display;
     }
