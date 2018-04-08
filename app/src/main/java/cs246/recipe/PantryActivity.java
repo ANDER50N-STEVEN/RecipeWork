@@ -47,9 +47,8 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     private SwipeMenuListView mPantryListView;
     private EditText mItemEdit;
     private EditText mValueEdit;
-    private ArrayAdapter<String> mAdapter;
-    ArrayList<String> pantryList = new ArrayList<>();
-    private String display;
+    private IngredientArrayAdapter mAdapter;
+    ArrayList<Ingredient> pantryList = new ArrayList<>();
 
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
@@ -59,20 +58,55 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     private String userID;
     private boolean load;
     private MixedFraction input;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
 
+        spinner = findViewById(R.id.spinner1);
+        String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
+        ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
+        madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(madapter);
+        spinner.setOnItemSelectedListener(this);
+
+        mAuth = FirebaseAuth.getInstance();
+        final FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+        FirebaseUser user = mAuth.getCurrentUser();
+        userID = user.getUid();
+        load = true;
+
+        mPantryListView = findViewById(R.id.pantryList);
+        mItemEdit = findViewById(R.id.item_editText);
+        mValueEdit = findViewById(R.id.value_editText);
+        Button mAddButton = findViewById(R.id.add_button);
+        mAdapter = new IngredientArrayAdapter(this);
+        mPantryListView.setAdapter(mAdapter);
+
+
         Toolbar mToolBar = findViewById(R.id.toolBarView);
         mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
 
+        DatabaseReference username = myRef.child("users").child(userID).child("name");
+        username.addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        name = dataSnapshot.getValue().toString();
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                }
+        );
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(name).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
@@ -124,26 +158,6 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                 .build();
         result.addStickyFooterItem(new PrimaryDrawerItem().withName("© Beet It").withIcon(R.drawable.beet_it_blue));
 
-        spinner = findViewById(R.id.spinner1);
-        String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
-        ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
-        madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(madapter);
-        spinner.setOnItemSelectedListener(this);
-
-        mAuth = FirebaseAuth.getInstance();
-        final FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-        FirebaseUser user = mAuth.getCurrentUser();
-        userID = user.getUid();
-        load = true;
-
-        mPantryListView = findViewById(R.id.pantryList);
-        mItemEdit = findViewById(R.id.item_editText);
-        mValueEdit = findViewById(R.id.value_editText);
-        Button mAddButton = findViewById(R.id.add_button);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pantryList);
-        mPantryListView.setAdapter(mAdapter);
 
 
         /**
@@ -178,10 +192,8 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                 // whenever data at this location is updated.
                 Log.d(TAG, "onDataChange: Added information to database: \n" +
                         dataSnapshot.getValue());
-                if(load) {
                     showData(dataSnapshot);
-                    load = false;
-                }
+
             }
             @Override
             public void onCancelled(DatabaseError error) {
@@ -201,49 +213,27 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
 
                 //handle the exception if the EditText fields are null
                 if (!item.equals("") && !value.equals("")) {
-                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                    rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            if (!snapshot.child("users").child(userID).child("Pantry").hasChild(item)) {
-
-                                if(input.getWhole() == 0){
-                                    input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " " + units);
-                                }else{
-                                    if (input.getNumerator() != 0) {
-                                        input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
-                                    }else
-                                        input.setDisplay(input.getWhole() + " " + units);
-                                }
-                                Ingredient ingredient = new Ingredient(item, units, input);
-                                pantryList.add(input.getDisplay() + " - " + item);
-                                myRef.child("users").child(userID).child("Pantry").child(item).setValue(ingredient);
-                                mPantryListView.setAdapter(mAdapter);
-                                mAdapter.notifyDataSetChanged();
-                                mItemEdit.setText("");
-                                mValueEdit.setText("");
-                                toastMessage("New Information has been saved.");
-                            } else {
-                                convertData(Integer.parseInt(snapshot.child("users").child(userID).child("Pantry").child(item).child("measurement").child("numerator").getValue().toString()),
-                                        Integer.parseInt(snapshot.child("users").child(userID).child("Pantry").child(item).child("measurement").child("denominator").getValue().toString()),
-                                        Integer.parseInt(snapshot.child("users").child(userID).child("Pantry").child(item).child("measurement").child("whole").getValue().toString()),
-                                        snapshot.child("users").child(userID).child("Pantry").child(item).child("units").getValue().toString(),
-                                        item);
-
-                                Ingredient ingredient = new Ingredient(item, units, input);
-                                myRef.child("users").child(userID).child("Pantry").child(item).setValue(ingredient);
-                                mItemEdit.setText("");
-                                mValueEdit.setText("");
-                                pantryList.clear();
-                                load = true;
+                    Ingredient ingredient = mAdapter.find(item);
+                    Ingredient ingredient1 = new Ingredient(item, units, input);
+                    if (ingredient == null) {
+                        myRef.child("users").child(userID).child("Pantry").child(item).setValue(ingredient1);
+                    } else {
+                        if (ingredient.getIngredient().equals(ingredient1.getIngredient())) {
+                            if (!ingredient1.getUnits().equals("") &&
+                                    !ingredient1.getUnits().equals("floz") &&
+                                    !ingredient.getUnits().equals("") &&
+                                    !ingredient.getUnits().equals("floz")) {
+                                Log.d("merging", "merging2");
+                                int index = mAdapter.indexOf(ingredient);
+                                MergeIngredients mergeIngredients = new MergeIngredients();
+                                Ingredient merged = mergeIngredients.merge(ingredient, ingredient1);
+                                myRef.child("users").child(userID).child("Pantry").child(item).setValue(merged);
                             }
                         }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                    }
+                    mItemEdit.setText("");
+                    mValueEdit.setText("");
+                    toastMessage("New Information has been saved.");
                     spinner.setSelection(0);
                 } else {
                     toastMessage("Fill out all the fields");
@@ -257,21 +247,21 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void create(SwipeMenu menu) {
                 // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(
-                        getApplicationContext());
-                // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
-                        0xCE)));
-                // set item width
-                openItem.setWidth(300);
-                // set item title
-                openItem.setTitle("Edit");
-                // set item title fontsize
-                openItem.setTitleSize(18);
-                // set item title font color
-                openItem.setTitleColor(Color.WHITE);
-                // add to menu
-                menu.addMenuItem(openItem);
+//                SwipeMenuItem openItem = new SwipeMenuItem(
+//                        getApplicationContext());
+//                // set item background
+//                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
+//                        0xCE)));
+//                // set item width
+//                openItem.setWidth(300);
+//                // set item title
+//                openItem.setTitle("Edit");
+//                // set item title fontsize
+//                openItem.setTitleSize(18);
+//                // set item title font color
+//                openItem.setTitleColor(Color.WHITE);
+//                // add to menu
+//                menu.addMenuItem(openItem);
 
                 // create "delete" item
                 SwipeMenuItem deleteItem = new SwipeMenuItem(
@@ -296,24 +286,20 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
+//                    case 0:
+//                        String info = pantryList.get(position);
+//                        String name = info.substring(info.lastIndexOf(" ")+1);
+//                        mItemEdit.setText(name);
+//                        mValueEdit.setText(info.substring(0, info.indexOf(" ")));
+//                        myRef.child("users").child(userID).child("Pantry").child(name).removeValue();
+//                        pantryList.clear();
+//                        mAdapter.notifyDataSetChanged();
+//                        load = true;
+//                        Log.d(TAG, "key     -" + name);
+//                        break;
                     case 0:
-                        String info = pantryList.get(position);
-                        String name = info.substring(info.lastIndexOf(" ")+1);
-                        mItemEdit.setText(name);
-                        mValueEdit.setText(info.substring(0, info.indexOf(" ")));
-                        myRef.child("users").child(userID).child("Pantry").child(name).removeValue();
-                        pantryList.clear();
-                        mAdapter.notifyDataSetChanged();
-                        load = true;
-                        Log.d(TAG, "key     -" + name);
-                        break;
-                    case 1:
-                        String key = pantryList.get(position);
-                        key = key.substring(key.lastIndexOf(" ")+1);
-                        myRef.child("users").child(userID).child("Pantry").child(key).removeValue();
-                        pantryList.clear();
-                        mAdapter.notifyDataSetChanged();
-                        load = true;
+                        Ingredient key = mAdapter.getItem(position);
+                        myRef.child("users").child(userID).child("Pantry").child(key.getIngredient()).removeValue();
                         break;
                 }
                 // false : close the menu; true : not close the menu
@@ -324,20 +310,24 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     private void showData(DataSnapshot dataSnapshot){
-        for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("Pantry").getChildren()){
-            Ingredient uInfo = ds.getValue(Ingredient.class);
+        mAdapter.clear();
+        if (dataSnapshot.child("users").child(userID).hasChild("Pantry")) {
+            for (DataSnapshot ds : dataSnapshot.child("users").child(userID).child("Pantry").getChildren()) {
+                Ingredient uInfo = ds.getValue(Ingredient.class);
+                if (uInfo == null)
+                    continue;
 
-            //display all the information
-            Log.d(TAG, "showData: name: " + uInfo.getIngredient());
-            Log.d(TAG, "showData: email: " + uInfo.getMeasurement().getDisplay());
-            Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
-
-            pantryList.add(uInfo.getMeasurement().getDisplay() + " - " + uInfo.getIngredient());
-
-            ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,pantryList);
-            mPantryListView.setAdapter(adapter);
-
+                //display all the information
+                Log.d(TAG, "showData: database ingredient: " + uInfo.getIngredient());
+                Log.d(TAG, "showData: database value: " + uInfo.getMeasurement().getDisplay());
+                Log.d(TAG, "showData: database units: " + uInfo.getUnits());
+                Log.d(TAG, "showData: trial 1: " + uInfo.getMeasurement().getDisplay());
+                mAdapter.add(uInfo);
+            }
         }
+
+        mPantryListView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
     private int gcd(int a, int b){
