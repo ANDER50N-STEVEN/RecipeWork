@@ -3,7 +3,9 @@ package cs246.recipe;
 import java.util.List;
 
 /**
- * Created by Admin on 3/23/2018.
+ * Created by Eriqua Eisele on 3/23/2018.
+ * RecipeObject class:
+ *  Stores essential parts of a recipe.
  */
 
 public class RecipeObject {

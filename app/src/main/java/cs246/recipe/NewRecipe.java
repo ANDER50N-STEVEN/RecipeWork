@@ -1,5 +1,10 @@
 package cs246.recipe;
 
+/**
+ * NewRecipe class:
+ *  Creates a new recipe and stores it to the database.
+ */
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -78,10 +83,17 @@ public class NewRecipe extends AppCompatActivity {
     private Spinner spinner;
     private IngredientArrayAdapter mAdapter;
 
+    /**
+    * onCreate method:
+     * initializes member variables, sets up
+     * onClick methods.
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         TextView pageName = findViewById(R.id.pageName);
@@ -203,7 +215,7 @@ public class NewRecipe extends AppCompatActivity {
 //        ingredients = new ArrayList<>();
         ingredientList = (ListView) findViewById(R.id.listIngredient);
 
-        /*
+        /**
          *  Getting all the buttons and list view by their ID's
          */
         mImageView = findViewById(R.id.imageView);
@@ -225,8 +237,9 @@ public class NewRecipe extends AppCompatActivity {
         final SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
 
-        /*
-         * for our save button
+        /**
+         * for our save button:
+         *  Saves recipe to database.
          */
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v)
@@ -256,8 +269,9 @@ public class NewRecipe extends AppCompatActivity {
             }
         });
 
-        /*
-         * populate Ingredient list view
+        /**
+         * populate Ingredient list view:
+         *  Stores ingredients in activity's list.
          */
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,9 +300,9 @@ public class NewRecipe extends AppCompatActivity {
             }
         });
 
-        /*
-         * For our capture button
-         * request of choosing where to upload from
+        /**
+         * For our capture button:
+         *  request of choosing where to upload from.
          */
         mCaptureButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -306,8 +320,9 @@ public class NewRecipe extends AppCompatActivity {
             }
         });
 
-        /*
-         * For our cancel button
+        /**
+         * For our cancel button:
+         *  Cancels creation of new recipe.
          */
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

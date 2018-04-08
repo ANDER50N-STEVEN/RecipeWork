@@ -3,7 +3,9 @@ package cs246.recipe;
 import java.util.MissingFormatArgumentException;
 
 /**
- * Created by Admin on 3/30/2018.
+ * Created by Eriqua Eisele on 3/30/2018.
+ * MixedFraction:
+ *      Stores data for a mixed fraction.
  */
 
 public class MixedFraction {
@@ -12,6 +14,10 @@ public class MixedFraction {
     Integer denominator;
     String display;
 
+    /**
+     * Constructors:
+     *      Save data to class.
+     */
     MixedFraction(Integer whole, Integer numerator, Integer denominator) {
         setWhole(whole);
         setNumerator(numerator);
@@ -45,6 +51,9 @@ public class MixedFraction {
         createDisplay();
     }
 
+    /**
+     * getters and setters
+     */
     public void setDenominator(Integer denominator) {
         this.denominator = denominator;
     }
@@ -77,6 +86,11 @@ public class MixedFraction {
         return display;
     }
 
+    /**
+     * ConvertFromString:
+     *      Converts a string into a measurement.
+     * @param measurement
+     */
     private void convertFromString(String measurement) {
         setWhole(0);
         setNumerator(0);
@@ -98,6 +112,10 @@ public class MixedFraction {
         }
     }
 
+    /**
+     * createDisplay:
+     *      Creates a display for the measurement.
+     */
     private void createDisplay() {
         String display = "";
         if (whole != 0)

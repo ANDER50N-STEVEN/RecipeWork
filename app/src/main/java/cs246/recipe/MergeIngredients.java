@@ -6,9 +6,19 @@ import java.util.Locale;
 
 /**
  * Created by Eriqua Eisele on 4/7/2018.
+ *  MergeIngredients:
+ *      Combines ingredient amounts of same type ingredient.
  */
 
 public class MergeIngredients {
+
+    /**
+     * simpleMerge:
+     *      Constructor for simple merges.
+     * @param ingredient1
+     * @param ingredient2
+     * @return
+     */
     public Ingredient simpleMerge(Ingredient ingredient1, Ingredient ingredient2) {
         Ingredient ingredient = new Ingredient();
         ingredient.setIngredient(ingredient1.getIngredient());
@@ -26,6 +36,14 @@ public class MergeIngredients {
 
         return ingredient;
     }
+
+    /**
+     * merge:
+     *      Merges ingredients of different units together.
+     * @param ingredient1
+     * @param ingredient2
+     * @return
+     */
     public Ingredient merge(Ingredient ingredient1, Ingredient ingredient2) {
         Ingredient ingredient = new Ingredient();
         ingredient.setIngredient(ingredient1.getIngredient());
@@ -58,6 +76,13 @@ public class MergeIngredients {
         return gcd((b % a), a);
     }
 
+    /**
+     * MergeFraction:
+     *      adds ingredient amounts together.
+     * @param mixedFraction1
+     * @param mixedFraction2
+     * @return
+     */
     private MixedFraction mergeFractions(MixedFraction mixedFraction1, MixedFraction mixedFraction2) {
         MixedFraction mixedFraction = new MixedFraction();
         mixedFraction.setWhole(mixedFraction1.getWhole() + mixedFraction2.getWhole());
@@ -74,6 +99,15 @@ public class MergeIngredients {
         return mixedFraction;
     }
 
+
+    /**
+     * getConvertedFraction:
+     *      Converts ingredient unit and amount into different units/ amounts.
+     * @param mixedFraction1
+     * @param units
+     * @param toCups
+     * @return
+     */
     private MixedFraction getConvertedFraction(MixedFraction mixedFraction1, String units, boolean toCups) {
         MixedFraction mixedFraction = new MixedFraction();
 
@@ -110,6 +144,14 @@ public class MergeIngredients {
         return mixedFraction;
     }
 
+
+    /**
+     * convertUnitsToTsp:
+     *      Converts measurements into teaspoons.
+     * @param mixedFraction
+     * @param conversionFactor
+     * @return
+     */
     private MixedFraction convertUnitsToTsp(MixedFraction mixedFraction, int conversionFactor) {
         MixedFraction mixedFraction1 = new MixedFraction();
         mixedFraction1.setWhole(0);
@@ -121,6 +163,13 @@ public class MergeIngredients {
         return mixedFraction1;
     }
 
+    /**
+     * convertUnitsToCups:
+     *      Converts measurements into cups.
+     * @param mixedFraction
+     * @param conversionFactor
+     * @return
+     */
     private MixedFraction convertUnitsToCups(MixedFraction mixedFraction, int conversionFactor) {
         MixedFraction mixedFraction1 = new MixedFraction();
         mixedFraction1.setWhole(0);
@@ -132,6 +181,12 @@ public class MergeIngredients {
         return mixedFraction1;
     }
 
+    /**
+     * simplifyFraction:
+     *      Simplifies fractions into mixed fractions.
+     * @param mixedFraction
+     * @return
+     */
     private MixedFraction simplifyFraction(MixedFraction mixedFraction) {
         MixedFraction newMixedFraction = mixedFraction;
 
@@ -145,6 +200,11 @@ public class MergeIngredients {
         return newMixedFraction;
     }
 
+    /**
+     * Display:
+     *      Logs a fraction's data.
+     * @param mixedFraction
+     */
     private void display(MixedFraction mixedFraction) {
         String display = String.format(Locale.US, "whole: %d numerator: %d denominator: %d",
                 mixedFraction.getWhole(), mixedFraction.getNumerator(), mixedFraction.getDenominator());
