@@ -46,6 +46,8 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 public class NewRecipe extends AppCompatActivity {
 
     private ListView ingredientList;
@@ -80,6 +82,7 @@ public class NewRecipe extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         TextView pageName = findViewById(R.id.pageName);
         pageName.setText("Add New Recipe");
@@ -233,20 +236,23 @@ public class NewRecipe extends AppCompatActivity {
                 RecipeObject newRecipe = new RecipeObject(mAdapter.getIngredientList(), string);
                 mDatabaseRef.child("users").child(userID).child("Cookbook").child(name).setValue(newRecipe);
 
-                if (mUploadTask != null && mUploadTask.isInProgress()) {
-                    Toast.makeText(NewRecipe.this, "Upload in progress", Toast.LENGTH_SHORT).show();
-                } else {
-                    uploadFile();
-                }
+                if(!Objects.equals("", recipeName.getText().toString())) {
+                    if (mUploadTask != null && mUploadTask.isInProgress()) {
+                        Toast.makeText(NewRecipe.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                    } else {
+                        uploadFile();
+                    }
 
-                recipeName.setText("");
-                instructionsText.setText("");
-                mAdapter.clear();
-                mAdapter.notifyDataSetChanged();
-                editor.clear();
-                editor.commit();
+                    recipeName.setText("");
+                    instructionsText.setText("");
+                    mAdapter.clear();
+                    mAdapter.notifyDataSetChanged();
+                    editor.clear();
+                    editor.commit();
 
-                //finish();
+                    //finish();
+                }else
+                    Toast.makeText(NewRecipe.this, "You must name your Recipe", Toast.LENGTH_SHORT).show();
             }
         });
 

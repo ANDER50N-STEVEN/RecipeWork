@@ -105,6 +105,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         Toolbar mToolBar = findViewById(R.id.toolBarView);
         mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial));
 
+        //displays navigation bar on top of page
+
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
@@ -201,6 +203,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             }
         });
 
+        //Add new ingredient checks if it already exists and then either adds to it or creates new ingredient
+
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,6 +234,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                             }
                         }
                     }
+                    // reset all values
                     mItemEdit.setText("");
                     mValueEdit.setText("");
                     toastMessage("New Information has been saved.");
@@ -241,6 +246,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
         });
 
+        //empties shopping list and moves items to pantry
         mCheckoutButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -256,6 +262,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             }
         });
 
+        // currently only implements swipe to delete but could be implement additional functions
         SwipeMenuCreator creator = new SwipeMenuCreator() {
 
             @Override
@@ -326,7 +333,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
     }
 
-//    @SuppressLint("DefaultLocale")
+    // clears and then redisplays data
+
     private void showData(DataSnapshot dataSnapshot){
         mAdapter.clear();
         if (dataSnapshot.child("users").child(userID).hasChild("ShoppingList")) {
@@ -364,7 +372,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
     }
 
     /**
-     * Probably should be its own class
+     * function called with checkout.  copies everything in shopping list and adds or creates it in pantry
      *
      */
 
@@ -378,7 +386,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                     if (uInfo == null)
                         continue;
                     Log.d(TAG, "showData: name: " + uInfo.getIngredient());
-//                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getinput.setDisplay(());
                     Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
                     Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getDenominator());
                     Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getNumerator());
