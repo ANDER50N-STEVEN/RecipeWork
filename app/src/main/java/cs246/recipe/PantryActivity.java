@@ -90,23 +90,11 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
         Toolbar mToolBar = findViewById(R.id.toolBarView);
         mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
 
-        DatabaseReference username = myRef.child("users").child(userID).child("name");
-        username.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        name = dataSnapshot.getValue().toString();
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                }
-        );
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(name).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName("").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 

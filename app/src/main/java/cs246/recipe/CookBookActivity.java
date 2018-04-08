@@ -108,24 +108,11 @@ public class CookBookActivity extends AppCompatActivity {
             }
         };
 
-
-        DatabaseReference username = mDatabaseRef.child("users").child(userID).child("name");
-        username.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        name = dataSnapshot.getValue().toString();
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                }
-        );
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(name).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName("").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 

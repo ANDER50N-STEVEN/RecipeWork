@@ -103,25 +103,11 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         Toolbar mToolBar = findViewById(R.id.toolBarView);
         mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial));
 
-        DatabaseReference username = myRef.child("users").child(userID).child("name");
-        username.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        name = dataSnapshot.getValue().toString();
-                        Log.d(TAG, "onDataChange: Added name: \n" +
-                                name);
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                }
-        );
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(name).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName("").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
@@ -364,138 +350,6 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         mShoppingListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
-
-//    private int gcd(int a, int b){
-//        if(a == b)
-//            return a;
-//       if(a == 0)
-//           return b;
-//       return gcd((b%a), a);
-//    }
-//
-//    private void convertData(int numerator, int denominator, int oldValue, String dUnits){
-//        if(denominator == 0)
-//            denominator = 1;
-//        if(input.getDenominator() == 0)
-//            input.setDenominator(1);
-//        int multiplier = 1;
-//        int multiplier2 = 1;
-//        if(input.getDenominator() != denominator){
-//            multiplier2 = (input.getDenominator() / gcd(denominator, input.getDenominator()));
-//            multiplier = (denominator / gcd(denominator, input.getDenominator()));
-//        }
-//        switch(dUnits){
-//            case "tsp":
-//                numerator += (oldValue * denominator);
-//                if(Objects.equals(units, "tsp")) {
-//                    input.setNumerator((input.getWhole() * input.getDenominator()) + input.getNumerator());
-//                }
-//                if(Objects.equals(units, "tbs")) {
-//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
-//                }
-//                if(Objects.equals(units, "cup")) {
-//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
-//                }
-//                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
-//                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
-//                units = "tsp";
-//                break;
-//            case "tbs":
-//                numerator = ((oldValue * 3 * denominator) + (numerator * 3));
-//                if(Objects.equals(units, "tsp")) {
-//                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
-//                }
-//                if(Objects.equals(units, "tbs")){
-//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
-//                }
-//                if(Objects.equals(units, "cup")){
-//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
-//                }
-//                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
-//                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
-//                units = "tsp";
-//                break;
-//            case "cup":
-//                numerator = ((oldValue * 48 * denominator) + (numerator * 48));
-//                if(Objects.equals(units, "tsp")){
-//                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
-//                }
-//                if(Objects.equals(units, "tbs")){
-//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
-//                }
-//                if(Objects.equals(units, "cup")){
-//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
-//                }
-//                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
-//                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
-//                units = "tsp";
-//                break;
-//            default:
-//                input.setWhole(input.getWhole() + oldValue);
-//                units = " ";
-//                break;
-//        }
-//        if(input.getDenominator() == 0)
-//            input.setDenominator(1);
-//        if(((input.getNumerator() / input.getDenominator()) >= 48) && (Objects.equals(units, "tsp"))) {
-//            units = "cup";
-//            input.setDenominator(input.getDenominator() * 48);
-//            input.setWhole((input.getNumerator() / input.getDenominator()));
-//            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
-//            int common = gcd(input.getNumerator(), input.getDenominator());
-//            input.setNumerator(input.getNumerator()/common);
-//            input.setDenominator(input.getDenominator()/common);
-//            if (input.getNumerator() != 0) {
-//                if ((input.getNumerator() / ((input.getDenominator() * common) / 16)) >= 3) {
-//                    int tempD = input.getDenominator() * 3;
-//                    int tempV = ((input.getNumerator() / tempD));
-//                    int tempN = (input.getNumerator() - (input.getWhole() * tempD));
-//                    common = gcd(input.getNumerator(), tempD);
-//                    tempN = (tempN/common);
-//                    tempD = (tempD/common);
-//                    if (tempN != 0)
-//                        input.setDisplay(input.getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
-//                    else
-//                        input.setDisplay(input.getWhole() + " tbs" + tempN + " tsp");
-//                }
-//                else
-//                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
-//            }
-//            else
-//                input.setDisplay(input.getWhole() + " " + units);
-//        }else if (((input.getNumerator() / input.getDenominator()) >= 3) && (Objects.equals(units, "tsp"))) {
-//            Log.d(TAG, "showData: tbs \n");
-//            units = "tbs";
-//            input.setDenominator(input.getDenominator() * 3);
-//            input.setWhole(input.getNumerator() / input.getDenominator());
-//            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
-//            int common = gcd(input.getNumerator(), input.getDenominator());
-//            input.setNumerator(input.getNumerator()/common);
-//            input.setDenominator(input.getDenominator()/common);
-//            if (input.getNumerator() != 0)
-//                input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
-//            else
-//                input.setDisplay(input.getWhole() + " tbs");
-//        }else if (Objects.equals(units, "tsp")){
-//            Log.d(TAG, "showData: tsp \n");
-//            input.setWhole(input.getNumerator() / input.getDenominator());
-//            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
-//            int common = gcd(input.getNumerator(), input.getDenominator());
-//            input.setNumerator(input.getNumerator()/common);
-//            input.setDenominator(input.getDenominator()/common);
-//            if (input.getNumerator() != 0) {
-//                if (input.getWhole() != 0)
-//                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tsp");
-//                else
-//                    input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " tsp");
-//            }else
-//                input.setDisplay(input.getWhole() + "tsp");
-//        }else
-//            input.setDisplay(input.getWhole() + "   -   ");
-//        if(input.getNumerator() == 0) {
-//            input.setDenominator(1);
-//        }
-//    }
 
 
     @Override
