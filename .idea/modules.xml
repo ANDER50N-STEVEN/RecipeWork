@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Recipe.iml" filepath="$PROJECT_DIR$/Recipe.iml" />
       <module fileurl="file://C:\Users\Admin\RecipeWork\Recipe.iml" filepath="C:\Users\Admin\RecipeWork\Recipe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RecipeWork.iml" filepath="$PROJECT_DIR$/RecipeWork.iml" />
       <module fileurl="file://C:\Users\Steven Anderson\StudioProjects\Recipe\RecipeWork.iml" filepath="C:\Users\Steven Anderson\StudioProjects\Recipe\RecipeWork.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
