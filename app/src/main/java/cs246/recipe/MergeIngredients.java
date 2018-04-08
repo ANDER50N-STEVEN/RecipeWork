@@ -3,7 +3,6 @@ package cs246.recipe;
 import android.util.Log;
 
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Created by Eriqua Eisele on 4/7/2018.
@@ -52,26 +51,20 @@ public class MergeIngredients {
         MixedFraction mixedFraction1 = ingredient1.getMeasurement();
         MixedFraction mixedFraction2 = ingredient2.getMeasurement();
 
-        mixedFraction1 = getConvertedFraction(mixedFraction1, ingredient1.getUnits(), "tsp");
+        mixedFraction1 = getConvertedFraction(mixedFraction1, ingredient1.getUnits(), false);
         display(mixedFraction1);
-        mixedFraction2 = getConvertedFraction(mixedFraction2, ingredient2.getUnits(), "tsp");
+        mixedFraction2 = getConvertedFraction(mixedFraction2, ingredient2.getUnits(), false);
         display(mixedFraction2);
 
         MixedFraction newMixedFraction = new MixedFraction();
         newMixedFraction = mergeFractions(mixedFraction1, mixedFraction2);
-        if((newMixedFraction.getNumerator() / newMixedFraction.getDenominator()) >= 48)
-            ingredient.setUnits("cup");
-        else if((newMixedFraction.getNumerator() / newMixedFraction.getDenominator() >= 3))
-            ingredient.setUnits("tbs");
-        else
-            ingredient.setUnits("tsp");
-        newMixedFraction = getConvertedFraction(newMixedFraction, "tsp", ingredient.getUnits());
+        newMixedFraction = getConvertedFraction(newMixedFraction, "tsp", true);
 
         newMixedFraction = simplifyFraction(newMixedFraction);
         newMixedFraction = new MixedFraction(newMixedFraction.getWhole(), newMixedFraction.getNumerator(), newMixedFraction.getDenominator());
         ingredient.setMeasurement(newMixedFraction);
 
-//        ingredient.setUnits("cup");
+       ingredient.setUnits("cup");
         return ingredient;
     }
 
@@ -115,10 +108,10 @@ public class MergeIngredients {
      * @param toCups
      * @return
      */
-    private MixedFraction getConvertedFraction(MixedFraction mixedFraction1, String units, String convert) {
+    private MixedFraction getConvertedFraction(MixedFraction mixedFraction1, String units, boolean toCups) {
         MixedFraction mixedFraction = new MixedFraction();
 
-        if (Objects.equals(convert, "tsp")) {
+        if (!toCups) {
             switch (units) {
                 case "tsp":
                     mixedFraction = convertUnitsToTsp(mixedFraction1, 1);
@@ -133,21 +126,8 @@ public class MergeIngredients {
             }
         }
 
-        if (Objects.equals(convert, "tbs")) {
-            switch (units) {
-                case "tsp":
-                    mixedFraction = convertUnitsToTbs(mixedFraction1, 3);
-                    break;
-                case "tbs":
-                    mixedFraction = convertUnitsToTbs(mixedFraction1, 1);
-                    break;
-//                case "cup":
-//                    mixedFraction = convertUnitsToTbs(mixedFraction1, 16);
-//                    break;
 
-            }
-        }
-        if (Objects.equals(convert, "cup")) {
+        if (toCups) {
             switch (units) {
                 case "tsp":
                     mixedFraction = convertUnitsToCups(mixedFraction1, 48);
@@ -184,17 +164,6 @@ public class MergeIngredients {
         return mixedFraction1;
     }
 
-
-    private MixedFraction convertUnitsToTbs(MixedFraction mixedFraction, int conversionFactor) {
-        MixedFraction mixedFraction1 = new MixedFraction();
-        mixedFraction1.setNumerator(mixedFraction.getWhole() * mixedFraction.getDenominator() + mixedFraction.getNumerator());
-        mixedFraction1.setWhole(0);
-        mixedFraction1.setDenominator(mixedFraction.getDenominator());
-
-        mixedFraction1.setDenominator(mixedFraction1.getDenominator() * conversionFactor);
-
-        return mixedFraction1;
-    }
         /**
          * convertUnitsToCups:
          *      Converts measurements into cups.
