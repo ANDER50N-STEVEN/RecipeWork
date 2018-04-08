@@ -1,11 +1,13 @@
 package cs246.recipe;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +19,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +32,7 @@ public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
     DatabaseReference shoppingList;
+    DatabaseReference photos;
 
     List<Ingredient> ingredients;
     IngredientArrayAdapter adapter;
@@ -35,6 +43,7 @@ public class DisplayRecipe extends AppCompatActivity {
     TextView recipeNameEdit;
     ListView ingredientsList;
     TextView instructionsField;
+    ImageView recipeImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +52,7 @@ public class DisplayRecipe extends AppCompatActivity {
         recipeNameEdit = findViewById(R.id.R_recipeName);
         ingredientsList = findViewById(R.id.R_ingredientList);
         instructionsField = findViewById(R.id.R_instructionsField);
+        recipeImage = findViewById(R.id.R_recipeImage);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
@@ -92,6 +102,28 @@ public class DisplayRecipe extends AppCompatActivity {
 
             }
         });
+
+        photos = database.getReference().child("users").child(userID).child("Photos").child(recipeName);
+        photos.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UploadImageObject upload = dataSnapshot.getValue(UploadImageObject.class);
+                if (upload == null)
+                    return;
+
+                    Picasso.with(DisplayRecipe.this)
+                            .load(upload.getmImageUrl())
+                            .fit()
+                            .centerCrop()
+                            .into(recipeImage);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void R_goBackClick(View view) {
@@ -112,6 +144,12 @@ public class DisplayRecipe extends AppCompatActivity {
                         int index = ingredients.indexOf(in2);
                         MergeIngredients mergeIngredients = new MergeIngredients();
                         ingredients.set(index, mergeIngredients.merge(in2, in));
+                        found = true;
+                        break;
+                    } else if (in2.getUnits().equals(in.getUnits())) {
+                        int index = ingredients.indexOf(in2);
+                        MergeIngredients mergeIngredients = new MergeIngredients();
+                        ingredients.set(index, mergeIngredients.simpleMerge(in2, in));
                         found = true;
                         break;
                     }

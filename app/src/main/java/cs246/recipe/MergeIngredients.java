@@ -1,10 +1,31 @@
 package cs246.recipe;
 
+import android.util.Log;
+
+import java.util.Locale;
+
 /**
  * Created by Eriqua Eisele on 4/7/2018.
  */
 
 public class MergeIngredients {
+    public Ingredient simpleMerge(Ingredient ingredient1, Ingredient ingredient2) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setIngredient(ingredient1.getIngredient());
+        ingredient.setUnits(ingredient1.getUnits());
+
+        MixedFraction mixedFraction1 = ingredient1.getMeasurement();
+        MixedFraction mixedFraction2 = ingredient2.getMeasurement();
+
+        MixedFraction newMixedFraction = new MixedFraction();
+        newMixedFraction = mergeFractions(mixedFraction1, mixedFraction2);
+
+        newMixedFraction = simplifyFraction(newMixedFraction);
+        newMixedFraction = new MixedFraction(newMixedFraction.getWhole(), newMixedFraction.getNumerator(), newMixedFraction.getDenominator());
+        ingredient.setMeasurement(newMixedFraction);
+
+        return ingredient;
+    }
     public Ingredient merge(Ingredient ingredient1, Ingredient ingredient2) {
         Ingredient ingredient = new Ingredient();
         ingredient.setIngredient(ingredient1.getIngredient());
@@ -13,7 +34,9 @@ public class MergeIngredients {
         MixedFraction mixedFraction2 = ingredient2.getMeasurement();
 
         mixedFraction1 = getConvertedFraction(mixedFraction1, ingredient1.getUnits(), false);
+        display(mixedFraction1);
         mixedFraction2 = getConvertedFraction(mixedFraction2, ingredient2.getUnits(), false);
+        display(mixedFraction2);
 
         MixedFraction newMixedFraction = new MixedFraction();
         newMixedFraction = mergeFractions(mixedFraction1, mixedFraction2);
@@ -112,13 +135,19 @@ public class MergeIngredients {
     private MixedFraction simplifyFraction(MixedFraction mixedFraction) {
         MixedFraction newMixedFraction = mixedFraction;
 
-        int commmon = gcd(newMixedFraction.getNumerator(), newMixedFraction.getDenominator());
-        newMixedFraction.setNumerator(newMixedFraction.getNumerator() / commmon + newMixedFraction.getWhole() * newMixedFraction.getDenominator());
-        newMixedFraction.setDenominator(newMixedFraction.getDenominator() / commmon);
+        int common = gcd(newMixedFraction.getNumerator(), newMixedFraction.getDenominator());
+        newMixedFraction.setNumerator(newMixedFraction.getNumerator() / common + newMixedFraction.getWhole() * newMixedFraction.getDenominator());
+        newMixedFraction.setDenominator(newMixedFraction.getDenominator() / common);
 
         newMixedFraction.setWhole(newMixedFraction.getNumerator() / newMixedFraction.getDenominator());
         newMixedFraction.setNumerator(newMixedFraction.getNumerator() % newMixedFraction.getDenominator());
 
         return newMixedFraction;
+    }
+
+    private void display(MixedFraction mixedFraction) {
+        String display = String.format(Locale.US, "whole: %d numerator: %d denominator: %d",
+                mixedFraction.getWhole(), mixedFraction.getNumerator(), mixedFraction.getDenominator());
+        Log.d("measure convert", display);
     }
 }

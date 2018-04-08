@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cs246.recipe">
 
-    <uses-permission android:name = "android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,13 +26,17 @@
         <activity android:name=".PantryActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".NewRecipe" />
-        <activity android:name=".SignUp"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".ForgetPassword"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".DisplayRecipe"/>
+        <activity
+            android:name=".SignUp"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ForgetPassword"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".DisplayRecipe" />
+        <activity android:name=".AboutUs"></activity>
     </application>
 
 </manifest>

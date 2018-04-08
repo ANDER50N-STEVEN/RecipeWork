@@ -7,24 +7,35 @@
     tools:context="cs246.recipe.AboutUs">
 
 
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="129dp"
         android:layout_height="47dp"
-        android:text="About Us"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/about_us"
         android:textColor="@color/black"
         android:textSize="30sp"
-        tools:layout_editor_absoluteX="55dp"
-        tools:layout_editor_absoluteY="52dp" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="267dp"
-        android:layout_height="168dp"
-       />/ android:text="textView
-        tools:layout_editor_absoluteX="55dp"
-        tools:layout_editor_absoluteY="146dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:padding="4dp"
+        android:text="@string/text_with_paragraphs"
+        android:textColor="@color/dark_grey"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
 
 

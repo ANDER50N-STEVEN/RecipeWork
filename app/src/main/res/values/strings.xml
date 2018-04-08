@@ -36,4 +36,13 @@
     <string name="sign_out">Sign Out</string>
     <string name="about_us">About Us</string>
     <string name="hash_tag">No.</string>
+    <string name="text_with_paragraphs">
+        We are three college students who recognize the difficulty of eating well during these
+                college years. \nThis is something we hope that our app can help with.
+                \n Our goal is that students with be better able to know what they should buy, as
+                well as keeping track of what foods they have.\n With this app, students will no
+                longer have to worry about forgetting what food is in their own cupboards, and they
+                will better be able to know what it is they could be doing with their food.
+                \n Steven Anderson, \n Ankita Dev,\n and Eriqua Eisele
+    </string>
 </resources>
