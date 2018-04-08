@@ -1,16 +1,28 @@
 package cs246.recipe;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +43,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -50,6 +63,7 @@ public class CookBookActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private String userID;
+    private    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +87,45 @@ public class CookBookActivity extends AppCompatActivity {
 
 
         Toolbar mToolBar = findViewById(R.id.toolBarView);
-        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
+        mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial));
 
+        final ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                TextView textView = viewHolder.itemView.findViewById(R.id.text_view_name);
+                String name = textView.getText().toString();
+                Log.d("deleteRecie", name);
+                mDatabaseRef.child("users").child(userID).child("Cookbook").child(name).removeValue();
+                mDatabaseRef.child("users").child(userID).child("Photos").child(name).removeValue();
+
+
+            }
+        };
+
+
+        DatabaseReference username = mDatabaseRef.child("users").child(userID).child("name");
+        username.addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        name = dataSnapshot.getValue().toString();
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                }
+        );
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Mike Penz").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(name).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
@@ -103,8 +149,7 @@ public class CookBookActivity extends AppCompatActivity {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
-                        switch(position)
-                        {
+                        switch (position) {
                             case 1:
                                 Intent intent = new Intent(CookBookActivity.this, CookBookActivity.class);
                                 startActivity(intent);
@@ -139,6 +184,7 @@ public class CookBookActivity extends AppCompatActivity {
         mDatabaseRef.child("users").child(userID).child("Photos").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mUploads.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     UploadImageObject upload = postSnapshot.getValue(UploadImageObject.class);
                     mUploads.add(upload);
@@ -147,6 +193,8 @@ public class CookBookActivity extends AppCompatActivity {
                 sampleRecycler = new SampleRecycler(CookBookActivity.this, mUploads);
 
                 mRecyclerView.setAdapter(sampleRecycler);
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+                itemTouchHelper.attachToRecyclerView(mRecyclerView);
                 mProgressCircle.setVisibility(View.INVISIBLE);
             }
 
@@ -158,12 +206,11 @@ public class CookBookActivity extends AppCompatActivity {
         });
 
 
-
         FloatingActionButton mAddNewRecipe = findViewById(R.id.addNewRecipe);
 
         mAddNewRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v)
-            {
+            @Override
+            public void onClick(View v) {
                 Intent intent = new Intent(CookBookActivity.this, NewRecipe.class);
                 mUploads.clear();
                 startActivity(intent);
@@ -184,11 +231,7 @@ public class CookBookActivity extends AppCompatActivity {
             }
         };
 
+
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
 }

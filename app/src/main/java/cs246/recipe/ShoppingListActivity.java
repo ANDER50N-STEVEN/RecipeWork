@@ -56,8 +56,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
     private SwipeMenuListView mShoppingListView;
     private EditText mItemEdit;
     private EditText mValueEdit;
-    private ArrayAdapter<String> mAdapter;
-
+    private IngredientArrayAdapter mAdapter;
 
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
@@ -66,11 +65,11 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
     private String units;
     private String userID;
     private boolean load;
-    private String display;
+    private String name;
     private MixedFraction input;
 
 
-    private ArrayList<String> shoppingList = new ArrayList<>();
+    private ArrayList<Ingredient> shoppingList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,24 +89,39 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
         final FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
         load = true;
+        final DatabaseReference login = myRef.child("users").child(userID);
 
         mItemEdit = findViewById(R.id.item_editText);
         mValueEdit = findViewById(R.id.value_editText);
-        Button mAddButton = findViewById(R.id.add_button);
+        final Button mAddButton = findViewById(R.id.add_button);
         Button mCheckoutButton = findViewById(R.id.checkout);
 
         mShoppingListView = findViewById(R.id.shoppingList);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, shoppingList);
+        mAdapter = new IngredientArrayAdapter(this);
         mShoppingListView.setAdapter(mAdapter);
 
         Toolbar mToolBar = findViewById(R.id.toolBarView);
         mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial));
 
+        DatabaseReference username = myRef.child("users").child(userID).child("name");
+        username.addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        name = dataSnapshot.getValue().toString();
+                        Log.d(TAG, "onDataChange: Added name: \n" +
+                                name);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                }
+        );
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Mike Penz").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(name).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
@@ -195,12 +209,7 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 // whenever data at this location is updated.
                 Log.d(TAG, "onDataChange: Added information to database: \n" +
                         dataSnapshot.getValue());
-                if(load) {
-                    //loads the info from the database on initialization.
                     showData(dataSnapshot);
-                    load = false;
-                }
-
             }
             @Override
             public void onCancelled(DatabaseError error) {
@@ -220,53 +229,27 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
                 //handle the exception if the EditText fields are null
                 if (!item.equals("") && !value.equals("")) {
-                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                    rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                                if (!snapshot.child("users").child(userID).child("ShoppingList").hasChild(item)) {
-
-                                    if(input.getWhole() == 0){
-                                            input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " " + units);
-                                    }else{
-                                        if (input.getNumerator() != 0) {
-                                            input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
-                                        }else
-                                            input.setDisplay(input.getWhole() + " " + units);
-                                    }
-                                    Ingredient ingredient = new Ingredient(item, units, input, input.getDisplay());
-                                    shoppingList.add(input.getDisplay() + " - " + item);
-                                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
-                                    mShoppingListView.setAdapter(mAdapter);
-                                    mAdapter.notifyDataSetChanged();
-                                    mItemEdit.setText("");
-                                    mValueEdit.setText("");
-                                    toastMessage("New Information has been saved.");
-                                } else {
-//                                    MixedFraction old = snapshot.child("users").child(userID).child("ShoppingList").child(item).getValue(MixedFraction.class);
-//                                    Convert convert = new Convert(item, old, snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString(),
-//                                            input, units, display);
-                                    convertData(Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("numerator").getValue().toString()),
-                                            Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("denominator").getValue().toString()),
-                                            Integer.parseInt(snapshot.child("users").child(userID).child("ShoppingList").child(item).child("measurement").child("whole").getValue().toString()),
-                                            snapshot.child("users").child(userID).child("ShoppingList").child(item).child("units").getValue().toString());
-//                                    Log.d(TAG, "TTTTTTTTTTTTTEEEEEEEEEEEEEESSSSSSSSSSSSSTTTTTTTTTTTTT\n");
-//                                    convert.convertData();
-//                                    Ingredient ingredient = new Ingredient(convert.getIng(), convert.getNewUni(), convert.getNewFrac(), convert.getDisplay());
-                                    Ingredient ingredient = new Ingredient(item, units, input);
-                                    myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient);
-                                    mItemEdit.setText("");
-                                    mValueEdit.setText("");
-                                    shoppingList.clear();
-                                    load = true;
-                                }
+                    Ingredient ingredient = mAdapter.find(item);
+                    Ingredient ingredient1 = new Ingredient(item, units, input);
+                    if (ingredient == null) {
+                        myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(ingredient1);
+                    } else {
+                        if (ingredient.getIngredient().equals(ingredient1.getIngredient())) {
+                            if (!ingredient1.getUnits().equals("") &&
+                                    !ingredient1.getUnits().equals("floz") &&
+                                    !ingredient.getUnits().equals("") &&
+                                    !ingredient.getUnits().equals("floz")) {
+                                Log.d("merging", "merging2");
+                                int index = mAdapter.indexOf(ingredient);
+                                MergeIngredients mergeIngredients = new MergeIngredients();
+                                Ingredient merged = mergeIngredients.merge(ingredient, ingredient1);
+                                myRef.child("users").child(userID).child("ShoppingList").child(item).setValue(merged);
                             }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
                         }
-                    });
+                    }
+                    mItemEdit.setText("");
+                    mValueEdit.setText("");
+                    toastMessage("New Information has been saved.");
                     spinner.setSelection(0);
                 } else {
                     toastMessage("Fill out all the fields");
@@ -283,7 +266,8 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
                 Toast.makeText(getApplicationContext(), "Your shopping cart is now empty!",
                         Toast.LENGTH_LONG).show();
                 shoppingList.clear();
-//                mShoppingListView.setAdapter(null);
+                mShoppingListView.removeAllViewsInLayout();
+                mAdapter.clear();
                 mAdapter.notifyDataSetChanged();
 
             }
@@ -294,21 +278,21 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             @Override
             public void create(SwipeMenu menu) {
                 // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(
-                        getApplicationContext());
+//                SwipeMenuItem openItem = new SwipeMenuItem(
+//                        getApplicationContext());
                 // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
-                        0xCE)));
-                // set item width
-                openItem.setWidth(300);
-                // set item title
-                openItem.setTitle("Edit");
-                // set item title fontsize
-                openItem.setTitleSize(18);
-                // set item title font color
-                openItem.setTitleColor(Color.WHITE);
-                // add to menu
-                menu.addMenuItem(openItem);
+//                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
+//                        0xCE)));
+//                // set item width
+//                openItem.setWidth(300);
+//                // set item title
+//                openItem.setTitle("Edit");
+//                // set item title fontsize
+//                openItem.setTitleSize(18);
+//                // set item title font color
+//                openItem.setTitleColor(Color.WHITE);
+//                // add to menu
+//                menu.addMenuItem(openItem);
 
                 // create "delete" item
                 SwipeMenuItem deleteItem = new SwipeMenuItem(
@@ -333,24 +317,23 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
+//                    case 0:
+//                        String info = shoppingList.get(position);
+//                        String name = info.substring(info.lastIndexOf(" ")+1);
+//                        mItemEdit.setText(name);
+//                        mValueEdit.setText(info.substring(0, info.indexOf(" ")));
+//                        myRef.child("users").child(userID).child("ShoppingList").child(name).removeValue();
+//                        shoppingList.clear();
+//                        mAdapter.notifyDataSetChanged();
+//                        load = true;
+//                        Log.d(TAG, "key     -" + name);
+//                        break;
                     case 0:
-                        String info = shoppingList.get(position);
-                        String name = info.substring(info.lastIndexOf(" ")+1);
-                        mItemEdit.setText(name);
-                        mValueEdit.setText(info.substring(0, info.indexOf(" ")));
-                        myRef.child("users").child(userID).child("ShoppingList").child(name).removeValue();
-                        shoppingList.clear();
-                        mAdapter.notifyDataSetChanged();
-                        load = true;
-                        Log.d(TAG, "key     -" + name);
-                        break;
-                    case 1:
-                        String key = shoppingList.get(position);
-                        key = key.substring(key.lastIndexOf(" ")+1);
-                        myRef.child("users").child(userID).child("ShoppingList").child(key).removeValue();
-                        shoppingList.clear();
-                        mAdapter.notifyDataSetChanged();
-                        load = true;
+                        Ingredient key = mAdapter.getItem(position);
+                        myRef.child("users").child(userID).child("ShoppingList").child(key.getIngredient()).removeValue();
+//                        mAdapter.remove(position);
+//                        mAdapter.notifyDataSetChanged();
+//                        load = true;
                         break;
                 }
                 // false : close the menu; true : not close the menu
@@ -360,158 +343,159 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
 
     }
 
-    @SuppressLint("DefaultLocale")
+//    @SuppressLint("DefaultLocale")
     private void showData(DataSnapshot dataSnapshot){
-        for(DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()){
-            Ingredient uInfo = ds.getValue(Ingredient.class);
+        mAdapter.clear();
+        if (dataSnapshot.child("users").child(userID).hasChild("ShoppingList")) {
+            for (DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
+                Ingredient uInfo = ds.getValue(Ingredient.class);
+                if (uInfo == null)
+                    continue;
 
-            //display all the information
-            assert uInfo != null;
-            Log.d(TAG, "showData: database ingredient: " + uInfo.getIngredient());
-            Log.d(TAG, "showData: database value: " + uInfo.getMeasurement().getDisplay());
-            Log.d(TAG, "showData: database units: " + uInfo.getUnits());
-            Log.d(TAG, "showData: trial 1: " + uInfo.getMeasurement().getDisplay());
-            if (uInfo.getUnits().equals("")) {
-                shoppingList.add(uInfo.getMeasurement().getDisplay() + " - " + uInfo.getIngredient());
-            } else {
-                shoppingList.add(uInfo.getMeasurement().getDisplay() + " " + uInfo.getUnits() + " - " + uInfo.getIngredient());
+                //display all the information
+                Log.d(TAG, "showData: database ingredient: " + uInfo.getIngredient());
+                Log.d(TAG, "showData: database value: " + uInfo.getMeasurement().getDisplay());
+                Log.d(TAG, "showData: database units: " + uInfo.getUnits());
+                Log.d(TAG, "showData: trial 1: " + uInfo.getMeasurement().getDisplay());
+                mAdapter.add(uInfo);
             }
-            ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,shoppingList);
-            mShoppingListView.setAdapter(adapter);
         }
+
+        mShoppingListView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
-    private int gcd(int a, int b){
-        if(a == b)
-            return a;
-       if(a == 0)
-           return b;
-       return gcd((b%a), a);
-    }
-
-    private void convertData(int numerator, int denominator, int oldValue, String dUnits){
-        if(denominator == 0)
-            denominator = 1;
-        if(input.getDenominator() == 0)
-            input.setDenominator(1);
-        int multiplier = 1;
-        int multiplier2 = 1;
-        if(input.getDenominator() != denominator){
-            multiplier2 = (input.getDenominator() / gcd(denominator, input.getDenominator()));
-            multiplier = (denominator / gcd(denominator, input.getDenominator()));
-        }
-        switch(dUnits){
-            case "tsp":
-                numerator += (oldValue * denominator);
-                if(Objects.equals(units, "tsp")) {
-                    input.setNumerator((input.getWhole() * input.getDenominator()) + input.getNumerator());
-                }
-                if(Objects.equals(units, "tbs")) {
-                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
-                }
-                if(Objects.equals(units, "cup")) {
-                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
-                }
-                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
-                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
-                units = "tsp";
-                break;
-            case "tbs":
-                numerator = ((oldValue * 3 * denominator) + (numerator * 3));
-                if(Objects.equals(units, "tsp")) {
-                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
-                }
-                if(Objects.equals(units, "tbs")){
-                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
-                }
-                if(Objects.equals(units, "cup")){
-                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
-                }
-                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
-                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
-                units = "tsp";
-                break;
-            case "cup":
-                numerator = ((oldValue * 48 * denominator) + (numerator * 48));
-                if(Objects.equals(units, "tsp")){
-                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
-                }
-                if(Objects.equals(units, "tbs")){
-                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
-                }
-                if(Objects.equals(units, "cup")){
-                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
-                }
-                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
-                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
-                units = "tsp";
-                break;
-            default:
-                input.setWhole(input.getWhole() + oldValue);
-                units = " ";
-                break;
-        }
-        if(input.getDenominator() == 0)
-            input.setDenominator(1);
-        if(((input.getNumerator() / input.getDenominator()) >= 48) && (Objects.equals(units, "tsp"))) {
-            units = "cup";
-            input.setDenominator(input.getDenominator() * 48);
-            input.setWhole((input.getNumerator() / input.getDenominator()));
-            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
-            int common = gcd(input.getNumerator(), input.getDenominator());
-            input.setNumerator(input.getNumerator()/common);
-            input.setDenominator(input.getDenominator()/common);
-            if (input.getNumerator() != 0) {
-                if ((input.getNumerator() / ((input.getDenominator() * common) / 16)) >= 3) {
-                    int tempD = input.getDenominator() * 3;
-                    int tempV = ((input.getNumerator() / tempD));
-                    int tempN = (input.getNumerator() - (input.getWhole() * tempD));
-                    common = gcd(input.getNumerator(), tempD);
-                    tempN = (tempN/common);
-                    tempD = (tempD/common);
-                    if (tempN != 0)
-                        input.setDisplay(input.getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
-                    else
-                        input.setDisplay(input.getWhole() + " tbs" + tempN + " tsp");
-                }
-                else
-                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
-            }
-            else
-                input.setDisplay(input.getWhole() + " " + units);
-        }else if (((input.getNumerator() / input.getDenominator()) >= 3) && (Objects.equals(units, "tsp"))) {
-            Log.d(TAG, "showData: tbs \n");
-            units = "tbs";
-            input.setDenominator(input.getDenominator() * 3);
-            input.setWhole(input.getNumerator() / input.getDenominator());
-            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
-            int common = gcd(input.getNumerator(), input.getDenominator());
-            input.setNumerator(input.getNumerator()/common);
-            input.setDenominator(input.getDenominator()/common);
-            if (input.getNumerator() != 0)
-                input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
-            else
-                input.setDisplay(input.getWhole() + " tbs");
-        }else if (Objects.equals(units, "tsp")){
-            Log.d(TAG, "showData: tsp \n");
-            input.setWhole(input.getNumerator() / input.getDenominator());
-            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
-            int common = gcd(input.getNumerator(), input.getDenominator());
-            input.setNumerator(input.getNumerator()/common);
-            input.setDenominator(input.getDenominator()/common);
-            if (input.getNumerator() != 0) {
-                if (input.getWhole() != 0)
-                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tsp");
-                else
-                    input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " tsp");
-            }else
-                input.setDisplay(input.getWhole() + "tsp");
-        }else
-            input.setDisplay(input.getWhole() + "   -   ");
-        if(input.getNumerator() == 0) {
-            input.setDenominator(1);
-        }
-    }
+//    private int gcd(int a, int b){
+//        if(a == b)
+//            return a;
+//       if(a == 0)
+//           return b;
+//       return gcd((b%a), a);
+//    }
+//
+//    private void convertData(int numerator, int denominator, int oldValue, String dUnits){
+//        if(denominator == 0)
+//            denominator = 1;
+//        if(input.getDenominator() == 0)
+//            input.setDenominator(1);
+//        int multiplier = 1;
+//        int multiplier2 = 1;
+//        if(input.getDenominator() != denominator){
+//            multiplier2 = (input.getDenominator() / gcd(denominator, input.getDenominator()));
+//            multiplier = (denominator / gcd(denominator, input.getDenominator()));
+//        }
+//        switch(dUnits){
+//            case "tsp":
+//                numerator += (oldValue * denominator);
+//                if(Objects.equals(units, "tsp")) {
+//                    input.setNumerator((input.getWhole() * input.getDenominator()) + input.getNumerator());
+//                }
+//                if(Objects.equals(units, "tbs")) {
+//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
+//                }
+//                if(Objects.equals(units, "cup")) {
+//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
+//                }
+//                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
+//                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
+//                units = "tsp";
+//                break;
+//            case "tbs":
+//                numerator = ((oldValue * 3 * denominator) + (numerator * 3));
+//                if(Objects.equals(units, "tsp")) {
+//                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
+//                }
+//                if(Objects.equals(units, "tbs")){
+//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
+//                }
+//                if(Objects.equals(units, "cup")){
+//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
+//                }
+//                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
+//                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
+//                units = "tsp";
+//                break;
+//            case "cup":
+//                numerator = ((oldValue * 48 * denominator) + (numerator * 48));
+//                if(Objects.equals(units, "tsp")){
+//                    input.setNumerator(input.getNumerator() + (input.getWhole() * input.getDenominator()));
+//                }
+//                if(Objects.equals(units, "tbs")){
+//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 3);
+//                }
+//                if(Objects.equals(units, "cup")){
+//                    input.setNumerator(((input.getWhole() * input.getDenominator()) + input.getNumerator()) * 48);
+//                }
+//                input.setDenominator((input.getDenominator() * denominator) / gcd(denominator, input.getDenominator()));
+//                input.setNumerator((input.getNumerator() * multiplier) + (numerator * multiplier2));
+//                units = "tsp";
+//                break;
+//            default:
+//                input.setWhole(input.getWhole() + oldValue);
+//                units = " ";
+//                break;
+//        }
+//        if(input.getDenominator() == 0)
+//            input.setDenominator(1);
+//        if(((input.getNumerator() / input.getDenominator()) >= 48) && (Objects.equals(units, "tsp"))) {
+//            units = "cup";
+//            input.setDenominator(input.getDenominator() * 48);
+//            input.setWhole((input.getNumerator() / input.getDenominator()));
+//            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
+//            int common = gcd(input.getNumerator(), input.getDenominator());
+//            input.setNumerator(input.getNumerator()/common);
+//            input.setDenominator(input.getDenominator()/common);
+//            if (input.getNumerator() != 0) {
+//                if ((input.getNumerator() / ((input.getDenominator() * common) / 16)) >= 3) {
+//                    int tempD = input.getDenominator() * 3;
+//                    int tempV = ((input.getNumerator() / tempD));
+//                    int tempN = (input.getNumerator() - (input.getWhole() * tempD));
+//                    common = gcd(input.getNumerator(), tempD);
+//                    tempN = (tempN/common);
+//                    tempD = (tempD/common);
+//                    if (tempN != 0)
+//                        input.setDisplay(input.getWhole() + " cup " + tempV + " " + tempN + "/" + tempD + " tbs");
+//                    else
+//                        input.setDisplay(input.getWhole() + " tbs" + tempN + " tsp");
+//                }
+//                else
+//                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " " + units);
+//            }
+//            else
+//                input.setDisplay(input.getWhole() + " " + units);
+//        }else if (((input.getNumerator() / input.getDenominator()) >= 3) && (Objects.equals(units, "tsp"))) {
+//            Log.d(TAG, "showData: tbs \n");
+//            units = "tbs";
+//            input.setDenominator(input.getDenominator() * 3);
+//            input.setWhole(input.getNumerator() / input.getDenominator());
+//            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
+//            int common = gcd(input.getNumerator(), input.getDenominator());
+//            input.setNumerator(input.getNumerator()/common);
+//            input.setDenominator(input.getDenominator()/common);
+//            if (input.getNumerator() != 0)
+//                input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tbs");
+//            else
+//                input.setDisplay(input.getWhole() + " tbs");
+//        }else if (Objects.equals(units, "tsp")){
+//            Log.d(TAG, "showData: tsp \n");
+//            input.setWhole(input.getNumerator() / input.getDenominator());
+//            input.setNumerator(input.getNumerator() - (input.getWhole() * input.getDenominator()));
+//            int common = gcd(input.getNumerator(), input.getDenominator());
+//            input.setNumerator(input.getNumerator()/common);
+//            input.setDenominator(input.getDenominator()/common);
+//            if (input.getNumerator() != 0) {
+//                if (input.getWhole() != 0)
+//                    input.setDisplay(input.getWhole() + " " + input.getNumerator() + "/" + input.getDenominator() + " tsp");
+//                else
+//                    input.setDisplay(input.getNumerator() + "/" + input.getDenominator() + " tsp");
+//            }else
+//                input.setDisplay(input.getWhole() + "tsp");
+//        }else
+//            input.setDisplay(input.getWhole() + "   -   ");
+//        if(input.getNumerator() == 0) {
+//            input.setDenominator(1);
+//        }
+//    }
 
 
     @Override
@@ -540,28 +524,24 @@ public class ShoppingListActivity extends AppCompatActivity implements AdapterVi
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
                     Ingredient uInfo = ds.getValue(Ingredient.class);
-                    assert uInfo != null;
+                    if (uInfo == null)
+                        continue;
                     Log.d(TAG, "showData: name: " + uInfo.getIngredient());
 //                    Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getinput.setDisplay(());
                     Log.d(TAG, "showData: phone_num: " + uInfo.getUnits());
                     Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getDenominator());
                     Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getNumerator());
                     Log.d(TAG, "showData: value: " + uInfo.getMeasurement().getWhole());
+
                     if (!dataSnapshot.child("users").child(userID).child("Pantry").hasChild(uInfo.getIngredient())) {
                         myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(uInfo);
                     } else {
                             Ingredient dInfo = dataSnapshot.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).getValue(Ingredient.class);
                             units = dInfo.getUnits();
                             input = dInfo.getMeasurement();
-                            display = dInfo.getDisplay();
-                            Log.d(TAG, "showData: CRRRRRRRRRRRAAAAAAAAAZZZZZZZZZYYYYYYYYYY");
-                            convertData(uInfo.getMeasurement().getNumerator(),
-                                    uInfo.getMeasurement().getDenominator(),
-                                    uInfo.getMeasurement().getWhole(),
-                                    uInfo.getUnits());
-                            Log.d(TAG, "showData: CRRRRRRRRRRRAAAAAAAAAZZZZZZZZZYYYYYYYYYY2");
-                            Ingredient newIngredient = new Ingredient(uInfo.getIngredient(), units, input);
-                            myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(newIngredient);
+                            MergeIngredients mergeIngredients = new MergeIngredients();
+                            Ingredient merged = mergeIngredients.merge(uInfo, dInfo);
+                            myRef.child("users").child(userID).child("Pantry").child(uInfo.getIngredient()).setValue(merged);
                     }
                     shoppingList.clear();
                 }

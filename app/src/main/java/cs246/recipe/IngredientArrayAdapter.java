@@ -30,8 +30,8 @@ public class IngredientArrayAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
+    public Ingredient getItem(int i) {
+        return ingredientList.get(i);
     }
 
     @Override
@@ -76,5 +76,29 @@ public class IngredientArrayAdapter extends BaseAdapter {
 
     public void clear() {
         ingredientList.clear();
+    }
+
+    public void remove(Ingredient ingredient){
+        ingredientList.remove(ingredient);
+    }
+
+    public void remove(int i){
+        ingredientList.remove(i);
+    }
+
+    public int indexOf(Ingredient ingredient){
+       return ingredientList.indexOf(ingredient);
+    }
+
+    public void set(int index, Ingredient ingredient){
+        ingredientList.set(index, ingredient);
+    }
+
+    public Ingredient find(String ingredient) {
+        for (Ingredient ingredient1 : ingredientList){
+            if (ingredient1.getIngredient().equals(ingredient))
+                return ingredient1;
+        }
+        return null;
     }
 }

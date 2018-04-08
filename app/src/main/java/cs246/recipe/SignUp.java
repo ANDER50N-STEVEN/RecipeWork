@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUp extends AppCompatActivity {
 
@@ -23,6 +26,7 @@ public class SignUp extends AppCompatActivity {
     private EditText mPasswordField;
     private Button mSignUpBtn;
     private EditText mNameField;
+    private DatabaseReference mRef;
 
     private FirebaseAuth mAuth;
 
@@ -37,6 +41,7 @@ public class SignUp extends AppCompatActivity {
         mPasswordField = findViewById(R.id.passwordInput);
         mSignUpBtn = findViewById(R.id.signUp);
         mNameField = findViewById(R.id.nameInput);
+        mRef = FirebaseDatabase.getInstance().getReference();
 
         mSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +56,7 @@ public class SignUp extends AppCompatActivity {
     {
         String email = mEmailField.getText().toString();
         String password = mPasswordField.getText().toString();
-        String name = mNameField.getText().toString();
+        final String name = mNameField.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password))
@@ -68,6 +73,8 @@ public class SignUp extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
+                                String userID = user.getUid().toString();
+                                mRef.child("users").child(userID).child("name").setValue(name);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());
