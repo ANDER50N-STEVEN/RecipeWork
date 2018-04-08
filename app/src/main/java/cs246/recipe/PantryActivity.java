@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -58,13 +59,13 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
     private String userID;
     private boolean load;
     private MixedFraction input;
-    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
-
+        TextView pageName = findViewById(R.id.pageName);
+        pageName.setText("Pantry");
         spinner = findViewById(R.id.spinner1);
         String[] measurement = new String[]{"   ", "tsp", "tbs", "cup", "floz", "box", "can", "lbs"};
         ArrayAdapter<String> madapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, measurement);
@@ -94,16 +95,16 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
         //if you want to update the items at a later time it is recommended to keep it in a variable
         SecondaryDrawerItem item1 = new SecondaryDrawerItem().withIdentifier(1).withName(R.string.title_home).withIcon(R.drawable.ic_home_black_24dp);
         SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.shopping_cart).withIcon(R.drawable.ic_shopping_cart_black_24dp);
-        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.add_recipe).withIcon(R.drawable.ic_library_add_black_24dp);
-        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
-        SecondaryDrawerItem item6 = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
+        SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withName(R.string.add_recipe).withIcon(R.drawable.ic_library_add_black_24dp);
+        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
+        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
 
         //create the drawer and remember the `Drawer` result object
         Drawer result = new DrawerBuilder()
@@ -111,7 +112,7 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                 .withAccountHeader(headerResult)
                 .withToolbar(mToolBar)
                 .addDrawerItems(
-                        item1, item2, item4, new DividerDrawerItem(), item5, item6
+                        item1, item2, item3, new DividerDrawerItem(), item4, item5
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -127,15 +128,15 @@ public class PantryActivity extends AppCompatActivity implements AdapterView.OnI
                                 intent = new Intent(PantryActivity.this, ShoppingListActivity.class);
                                 startActivity(intent);
                                 break;
+                            case 3:
+                                intent = new Intent(PantryActivity.this, NewRecipe.class);
+                                startActivity(intent);
+                                break;
                             case 4:
-                                intent = new Intent(PantryActivity.this, NewRecipe.class);
+                                intent = new Intent(PantryActivity.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 6:
-                                intent = new Intent(PantryActivity.this, NewRecipe.class);
-                                startActivity(intent);
-                                break;
-                            case 7:
+                            case 5:
                                 intent = new Intent(PantryActivity.this, NewRecipe.class);
                                 startActivity(intent);
                                 break;

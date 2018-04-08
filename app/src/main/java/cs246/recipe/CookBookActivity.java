@@ -1,26 +1,16 @@
 package cs246.recipe;
 
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +33,6 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -70,6 +59,9 @@ public class CookBookActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cook_book);
 
+        TextView pageName = findViewById(R.id.pageName);
+        pageName.setText("Cook Book");
+
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -77,9 +69,8 @@ public class CookBookActivity extends AppCompatActivity {
         mProgressCircle = findViewById(R.id.progress_circle);
 
         mAuth = FirebaseAuth.getInstance();
-        //FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        userID = user.getUid().toString();
+        userID = user.getUid();
 
         mUploads = new ArrayList<>();
 
@@ -112,7 +103,7 @@ public class CookBookActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("").withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
@@ -153,11 +144,11 @@ public class CookBookActivity extends AppCompatActivity {
                                 intent = new Intent(CookBookActivity.this, NewRecipe.class);
                                 startActivity(intent);
                                 break;
-                            case 6:
-                                intent = new Intent(CookBookActivity.this, NewRecipe.class);
+                            case 5:
+                                intent = new Intent(CookBookActivity.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 7:
+                            case 6:
                                 intent = new Intent(CookBookActivity.this, NewRecipe.class);
                                 startActivity(intent);
                                 break;

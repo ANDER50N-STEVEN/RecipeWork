@@ -5,12 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cs246.recipe.PantryActivity"
+    android:isScrollContainer="true"
     android:background="@color/sweetCream">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBarView"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recipe_name"
+            android:layout_gravity="center"
+            android:textSize="23sp"
+            android:textColor="@color/blueAqua"
+            android:textStyle="bold"
+            android:id="@+id/pageName" />
     </android.support.v7.widget.Toolbar>
 
     <EditText
@@ -34,6 +44,8 @@
         android:id="@+id/add_button"
         android:layout_width="match_parent"
         android:layout_height="43dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:background="@drawable/general_button_dark"
         android:text="@string/add_button_text"
         android:textColor="@color/blueAqua"

@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     tools:context="cs246.recipe.DisplayRecipe">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBarView"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recipe_name"
+            android:layout_gravity="center"
+            android:textSize="23sp"
+            android:textColor="@color/blueAqua"
+            android:textStyle="bold"
+            android:id="@+id/R_recipeName" />
+    </android.support.v7.widget.Toolbar>
+
     <ImageView
         android:id="@+id/R_recipeImage"
         android:layout_width="0dp"
@@ -50,7 +66,7 @@
         <TextView
             android:id="@+id/R_instructionsField"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:textSize="25sp" />
 
     </ScrollView>
@@ -63,6 +79,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/r_go_back"
+        android:background="@drawable/general_button_dark"
+        android:textColor="@color/blueAqua"
+        android:padding="5dp"
         android:onClick="R_goBackClick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/R_make"
@@ -77,6 +96,9 @@
         android:layout_marginStart="8dp"
         android:text="@string/r_make"
         android:onClick="R_make"
+        android:background="@drawable/general_button_dark"
+        android:textColor="@color/blueAqua"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -89,24 +111,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/r_made"
+        android:background="@drawable/general_button_dark"
+        android:textColor="@color/blueAqua"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/R_make" />
 
-    <TextView
-        android:id="@+id/R_recipeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textSize="30sp"
-        android:background="@color/translucentGray"
-        android:textColor="@color/md_white_1000"
-        app:layout_constraintBottom_toBottomOf="@+id/R_recipeImage"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/R_recipeImage" />
 
 </android.support.constraint.ConstraintLayout>

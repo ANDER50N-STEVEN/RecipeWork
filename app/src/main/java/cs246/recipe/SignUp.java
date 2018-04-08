@@ -15,9 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class SignUp extends AppCompatActivity {
 
@@ -26,8 +24,8 @@ public class SignUp extends AppCompatActivity {
     private EditText mPasswordField;
     private Button mSignUpBtn;
     private EditText mNameField;
-    private DatabaseReference mRef;
 
+    private String name;
     private FirebaseAuth mAuth;
 
     @Override
@@ -41,7 +39,6 @@ public class SignUp extends AppCompatActivity {
         mPasswordField = findViewById(R.id.passwordInput);
         mSignUpBtn = findViewById(R.id.signUp);
         mNameField = findViewById(R.id.nameInput);
-        mRef = FirebaseDatabase.getInstance().getReference();
 
         mSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,12 +53,12 @@ public class SignUp extends AppCompatActivity {
     {
         String email = mEmailField.getText().toString();
         String password = mPasswordField.getText().toString();
-        final String name = mNameField.getText().toString();
+        name = mNameField.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password))
+        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name))
         {
-            Toast.makeText(SignUp.this, "Fields are empty!", Toast.LENGTH_LONG).show();
+            Toast.makeText(SignUp.this, "Input field is empty!", Toast.LENGTH_LONG).show();
         }
         else
         {
@@ -73,8 +70,11 @@ public class SignUp extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                String userID = user.getUid().toString();
-                                mRef.child("users").child(userID).child("name").setValue(name);
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name).build();
+
+                                user.updateProfile(profileUpdates);
+
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());

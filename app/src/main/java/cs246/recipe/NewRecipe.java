@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -80,6 +81,9 @@ public class NewRecipe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
+        TextView pageName = findViewById(R.id.pageName);
+        pageName.setText("Add New Recipe");
+
         Toolbar mToolBar = findViewById(R.id.toolBarView);
         mToolBar.setBackground(getResources().getDrawable(R.color.blueOfficial ));
 
@@ -87,7 +91,7 @@ public class NewRecipe extends AppCompatActivity {
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Mike Penz").withEmail("").withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail()).withIcon(getResources().getDrawable(R.drawable.beet_it_blue))
                 )
                 .build();
 
@@ -95,8 +99,8 @@ public class NewRecipe extends AppCompatActivity {
         SecondaryDrawerItem item1 = new SecondaryDrawerItem().withIdentifier(1).withName(R.string.title_home).withIcon(R.drawable.ic_home_black_24dp);
         SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.shopping_cart).withIcon(R.drawable.ic_shopping_cart_black_24dp);
         SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withName(R.string.pantry_button).withIcon(R.drawable.ic_shopping_basket_black_24dp);
-        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
-        SecondaryDrawerItem item6 = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
+        SecondaryDrawerItem item4 = new SecondaryDrawerItem().withIdentifier(4).withName(R.string.about_us).withIcon(R.drawable.ic_info_outline_black_24dp);
+        SecondaryDrawerItem item5 = new SecondaryDrawerItem().withIdentifier(5).withName(R.string.sign_out).withIcon(R.drawable.ic_power_settings_new_black_24dp);
 
         //create the drawer and remember the `Drawer` result object
         Drawer result = new DrawerBuilder()
@@ -104,7 +108,7 @@ public class NewRecipe extends AppCompatActivity {
                 .withAccountHeader(headerResult)
                 .withToolbar(mToolBar)
                 .addDrawerItems(
-                        item1, item2, item3, new DividerDrawerItem(), item5, item6
+                        item1, item2, item3, new DividerDrawerItem(), item4, item5
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -124,11 +128,11 @@ public class NewRecipe extends AppCompatActivity {
                                 intent = new Intent(NewRecipe.this, PantryActivity.class);
                                 startActivity(intent);
                                 break;
-                            case 6:
-                                intent = new Intent(NewRecipe.this, NewRecipe.class);
+                            case 4:
+                                intent = new Intent(NewRecipe.this, AboutUs.class);
                                 startActivity(intent);
                                 break;
-                            case 7:
+                            case 5:
                                 intent = new Intent(NewRecipe.this, NewRecipe.class);
                                 startActivity(intent);
                                 break;
@@ -256,7 +260,7 @@ public class NewRecipe extends AppCompatActivity {
                 String measurementString = mAmount.getText().toString();
 
                 MixedFraction measurement = new MixedFraction(measurementString);
-                measurement.setDisplay(measurementString + " " + units);
+                measurement.setDisplay(measurementString + " ");
                 Ingredient newIngredient = new Ingredient(item, units, measurement);
                 mAdapter.add(newIngredient);
                 mAdapter.notifyDataSetChanged();
@@ -309,6 +313,7 @@ public class NewRecipe extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 editor.clear();
                 editor.commit();
+                finish();
             }
         });
 
