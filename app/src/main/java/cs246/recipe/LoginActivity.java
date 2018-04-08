@@ -19,6 +19,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/*
+        Login section to preserve privacy and unique aspects of
+        each users shopping list
+ */
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SAVE = 100;

@@ -32,6 +32,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/*
+        Displays the saved recipes listed in cookbook when you select them
+ */
 public class DisplayRecipe extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference reference;
@@ -199,6 +203,9 @@ public class DisplayRecipe extends AppCompatActivity {
     public void R_goBackClick(View view) {
         finish();
     }
+
+
+    // generates a list of ingredients from recipe and adds them to shopping list
 
     public void R_make(View view) {
         for (Ingredient in : adapter.getIngredientList()) {

@@ -12,6 +12,8 @@ import java.util.List;
 
 /**
  * Created by Admin on 3/24/2018.
+ * Custom adapter that is designed to perform all of the functions
+ * that an array adapter would but for a list of Ingredient Objects
  */
 
 public class IngredientArrayAdapter extends BaseAdapter {
