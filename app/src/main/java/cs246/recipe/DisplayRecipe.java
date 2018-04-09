@@ -146,6 +146,7 @@ public class DisplayRecipe extends AppCompatActivity {
                 .build();
         result.addStickyFooterItem(new PrimaryDrawerItem().withName("© Beet It").withIcon(R.drawable.beet_it_blue));
 
+
         reference.addValueEventListener(new ValueEventListener() {
             /**
              * retrieves data into adapter from firebase database
@@ -154,10 +155,112 @@ public class DisplayRecipe extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("dataCapture", "checking for data to capture");
-                RecipeObject recipeObject = dataSnapshot.getValue(RecipeObject.class);
-                instructionsField.setText(recipeObject.getInstructions());
-                adapter.clear();
-                adapter.addAll(recipeObject.getIngredients());
+                if (dataSnapshot.child("users").hasChild(userID)) {
+                                       Log.d("dataCapture", "Has child userID");
+                                        if (dataSnapshot.child("users").child(userID).hasChild("Cookbook")) {
+                                                Log.d("dataCapture", "Has child Cookbook");
+                                                if (dataSnapshot.child("users").child(userID).child("Cookbook").hasChild(recipeName)) {
+                                                        Log.d("dataCapture", "Has child recipe name");
+                                                        DataSnapshot ds = dataSnapshot.child("users").child(userID).child("Cookbook").child(recipeName);
+
+                                                                if (ds.hasChild("instructions")) {
+                                                                Log.d("dataCapture", "Has child instructions");
+                                                                instructionsField.setText(String.valueOf(ds.child("instructions").getValue()));
+                                                            }
+
+                                                                if (ds.hasChild("ingredients")) {
+                                                                Log.d("dataCapture", "Has child ingredients");
+                                                                if (ds.child("ingredients").hasChildren()) {
+                                                                        Log.d("dataCapture", "ingredients has children");
+                                                                        for (DataSnapshot ingredient : ds.child("ingredients").getChildren()) {
+                                                                                String units = "Error";
+                                                                                Integer whole = 0;
+                                                                                Integer denominator = 1;
+                                                                                Integer numerator = 0;
+                                                                                MixedFraction measurement;
+
+                                                                                        String ingredientString = "Error";
+
+                                                                                        if (ingredient.hasChild("units")) {
+                                                                                        Log.d("dataCapture", "Has child units");
+                                                                                        units = String.valueOf(ingredient.child("units").getValue());
+                                                                                    }
+                                                                               if (ingredient.hasChild("ingredient")) {
+                                                                                        Log.d("dataCapture", "Has child ingredient");
+                                                                                        ingredientString = String.valueOf(ingredient.child("ingredient").getValue());
+                                                                                    }
+
+                                                                                        if (ingredient.hasChild("measurement")) {
+                                                                                        if (ingredient.child("measurement").hasChildren()) {
+                                                                                                if (ingredient.child("measurement").hasChild("whole")) {
+                                                                                                        Log.d("dataCapture", "Has child whole");
+                                                                                                        whole = Integer.valueOf(String.valueOf(ingredient.child("measurement").child("whole").getValue()));
+                                                                                                    }
+                                                                                               if (ingredient.child("measurement").hasChild("numerator")) {
+                                                                                                        Log.d("dataCapture", "Has child numerator");
+                                                                                                        numerator = Integer.valueOf(String.valueOf(ingredient.child("measurement").child("numerator").getValue()));
+                                                                                                    }
+                                                                                               if (ingredient.child("measurement").hasChild("denominator")) {
+                                                                                                        Log.d("dataCapture", "Has child denominator");
+                                                                                                        denominator = Integer.valueOf(String.valueOf(ingredient.child("measurement").child("denominator").getValue()));
+                                                                                                    }
+                                                                                           }
+                                                                                    }
+
+                                                                                        measurement = new MixedFraction(whole, numerator, denominator);
+                                                                                Ingredient ingredientObject = new Ingredient(ingredientString, units, measurement);
+                                                                                adapter.add(ingredientObject);
+                                                                            }
+                                                                    }
+                                                            }
+                                                    }
+                                            }
+                                        if (dataSnapshot.child("users").child(userID).hasChild("ShoppingList")) {
+                                                Log.d("dataCapture", "Has child ShoppingList");
+                                                for(DataSnapshot ds: dataSnapshot.child("users").child(userID).child("ShoppingList").getChildren()) {
+                                                        String ingredient = "";
+                                                        String units = "";
+                                                        MixedFraction measurement = new MixedFraction();
+                                                        if (ds.hasChild("ingredient")) {
+                                                                ingredient = String.valueOf(ds.child("ingredient").getValue());
+                                                            }
+                                                        if (ds.hasChild("units")) {
+                                                                units = String.valueOf(ds.child("units").getValue());
+                                                            }
+                                                        if (ds.hasChild("measurement")) {
+                                                                int whole = 0;
+                                                                int numerator = 0;
+                                                                int denominator = 0;
+                                                                if (ds.child("measurement").hasChild("whole")) {
+                                                                       try {
+                                                                                whole = Integer.valueOf(String.valueOf(ds.child("whole").getValue()));
+                                                                            } catch (Exception e) {
+                                                                                whole = 0;
+                                                                            }
+                                                                  }
+                                                                if (ds.child("measurement").hasChild("numerator")) {
+                                                                        try {
+                                                                                numerator = Integer.valueOf(String.valueOf(ds.child("numerator").getValue()));
+                                                                            } catch (Exception e) {
+                                                                                whole = 0;
+                                                                            }
+                                                                    }
+                                                                if (ds.child("measurement").hasChild("denominator")) {
+                                                                        try {
+                                                                                denominator = Integer.valueOf(String.valueOf(ds.child("denominator").getValue()));
+                                                                            } catch (Exception e) {
+                                                                                whole = 0;
+                                                                            }
+                                                                   }
+                                                                measurement = new MixedFraction(whole, numerator, denominator);
+                                                            }
+
+                                                                                            Ingredient uInfo = new Ingredient(ingredient, units, measurement);
+                                                        assert uInfo != null;
+                                                        ingredients.add(uInfo);
+                                                    }
+                                            }
+                                    }
                 adapter.notifyDataSetChanged();
             }
 
@@ -168,7 +271,8 @@ public class DisplayRecipe extends AppCompatActivity {
         });
 
         ingredients = new ArrayList<>();
-        shoppingList = database.getReference().child("users").child(userID).child("ShoppingList");
+        shoppingList = database.getReference().child("users").
+                child(userID).child("ShoppingList");
         shoppingList.addValueEventListener(new ValueEventListener() {
             /**
              * retrieves data from firebase
@@ -262,4 +366,5 @@ public class DisplayRecipe extends AppCompatActivity {
 
         Toast.makeText(this, "Ingredients Added to Shopping List", Toast.LENGTH_SHORT).show();
     }
+
 }
